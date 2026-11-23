@@ -3,7 +3,7 @@
  * Coordina el documento fijo, las preferencias de lectura y el panel de medios.
  */
 
-import { prepareDocument } from './docx.js';
+import { prepareDocument } from './document.js';
 
 import {
   FONT_MAX,
@@ -59,8 +59,6 @@ const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
 const DOCUMENT_NAME = 'Lector TFG';
 
 const state = {
-  view: 'reader',
-  doc: null,
   headings: [],
   media: [],
   prefs: readPrefs()
@@ -131,26 +129,6 @@ function showToast(message, tone = 'info', duration = 6500) {
   }, duration);
 }
 
-/* ---------- Vistas ---------- */
-
-function setView({ focus = true } = {}) {
-  state.view = 'reader';
-  docPane.hidden = false;
-  docInfo.hidden = false;
-  fontControls.hidden = false;
-  updateTocLayout();
-
-  const firstHeading = state.headings[0];
-  skipLink.setAttribute('href', `#${firstHeading ? firstHeading.id : 'doc-pane'}`);
-  document.title = `${DOCUMENT_NAME}`;
-
-  if (!focus) {
-    return;
-  }
-
-  docPane.focus({ preventScroll: true });
-}
-
 function updateTocLayout() {
   const isDesktop = desktopQuery.matches;
   const wasOpen = tocSidebar.classList.contains('is-open');
@@ -196,17 +174,27 @@ function updateDocInfo() {
   docName.title = 'Trabajo Final de Grado';
 }
 
-function showReader(doc, headings, { focus = true } = {}) {
-  state.doc = doc;
+function showReader(headings, { focus = true } = {}) {
   state.headings = headings;
   enhanceMediaLinks();
   updateNavigation();
   observeHeadings();
 
   updateDocInfo();
-  setView({ focus });
+  docPane.hidden = false;
+  docInfo.hidden = false;
+  fontControls.hidden = false;
+  updateTocLayout();
 
-  announce(`Documento abierto: ${doc.name}.`);
+  const firstHeading = state.headings[0];
+  skipLink.setAttribute('href', `#${firstHeading ? firstHeading.id : 'doc-pane'}`);
+  document.title = DOCUMENT_NAME;
+
+  if (focus) {
+    docPane.focus({ preventScroll: true });
+  }
+
+  announce(`Documento abierto: ${DOCUMENT_NAME}.`);
 }
 
 /* ---------- Índice y lista de medios ---------- */
@@ -1313,7 +1301,7 @@ fontIncrease.addEventListener('click', () => changeFontSize(FONT_STEP));
 
 applyFontSize(state.prefs.fontSize);
 syncThemeButton();
-showReader({ name: DOCUMENT_NAME }, prepareDocument(docContent).headings, { focus: false });
+showReader(prepareDocument(docContent).headings, { focus: false });
 
 window.requestAnimationFrame(() => {
   window.requestAnimationFrame(() => {

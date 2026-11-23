@@ -29,20 +29,23 @@ test('font size normalization stays inside 16–24 px', () => {
   assert.equal(normalizeFontSize('invalid'), FONT_DEFAULT);
 });
 
-test('readPrefs enables remember by default', () => {
+test('readPrefs defaults to the dark theme and standard font size', () => {
   window.localStorage.values.clear();
   const prefs = readPrefs();
 
-  assert.equal(prefs.remember, true);
   assert.equal(prefs.theme, 'dark');
+  assert.equal(prefs.fontSize, FONT_DEFAULT);
 });
 
-test('remember preference persists alongside theme and font', () => {
+test('theme and font preferences persist without legacy document settings', () => {
   window.localStorage.values.clear();
-  writePrefs({ theme: 'dark', fontSize: 22, remember: false });
+  writePrefs({ theme: 'light', fontSize: 22, remember: false });
 
   const prefs = readPrefs();
-  assert.equal(prefs.theme, 'dark');
+  assert.equal(prefs.theme, 'light');
   assert.equal(prefs.fontSize, 22);
-  assert.equal(prefs.remember, false);
+  assert.deepEqual(
+    JSON.parse(window.localStorage.values.get('webmili:prefs:v1')),
+    { theme: 'light', fontSize: 22 }
+  );
 });

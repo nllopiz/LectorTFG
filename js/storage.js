@@ -42,8 +42,7 @@ export function readPrefs() {
 
   return {
     theme: THEMES.has(raw.theme) ? raw.theme : 'dark',
-    fontSize: normalizeFontSize(raw.fontSize),
-    remember: typeof raw.remember === 'boolean' ? raw.remember : true
+    fontSize: normalizeFontSize(raw.fontSize)
   };
 }
 
@@ -55,8 +54,7 @@ export function writePrefs(patch) {
   const current = readPrefs();
   const next = {
     theme: THEMES.has(patch.theme) ? patch.theme : current.theme,
-    fontSize: normalizeFontSize(patch.fontSize ?? current.fontSize),
-    remember: typeof patch.remember === 'boolean' ? patch.remember : current.remember
+    fontSize: normalizeFontSize(patch.fontSize ?? current.fontSize)
   };
 
   try {
