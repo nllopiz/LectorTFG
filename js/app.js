@@ -18,6 +18,7 @@ const docPane = document.getElementById('doc-pane');
 const docSheet = document.getElementById('doc-sheet');
 const docContent = document.getElementById('doc-content');
 const docInfo = document.getElementById('doc-info');
+const docTitle = document.getElementById('doc-title');
 const docName = document.getElementById('doc-name');
 const fontControls = document.getElementById('font-controls');
 const fontDecrease = document.getElementById('font-decrease');
@@ -30,6 +31,7 @@ const mediaButton = document.getElementById('media-button');
 const mediaCount = document.getElementById('media-count');
 const mediaDialog = document.getElementById('media-dialog');
 const tocList = document.getElementById('toc-list');
+const tocTooltip = document.getElementById('toc-tooltip');
 const mediaList = document.getElementById('media-list');
 const skipLink = document.getElementById('skip-link');
 const toastRegion = document.getElementById('toasts');
@@ -46,9 +48,11 @@ const mediaProvider = document.getElementById('media-provider');
 const mediaLabel = document.getElementById('media-label');
 const mediaExternal = document.getElementById('media-external');
 const mediaClose = document.getElementById('media-close');
+const mediaFallback = document.getElementById('media-fallback');
 const mediaNote = document.getElementById('media-note');
 
 const desktopQuery = window.matchMedia('(min-width: 900px)');
+const landscapeQuery = window.matchMedia('(orientation: landscape)');
 const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -97,6 +101,7 @@ let resizeTimer = 0;
 let resizeFrame = 0;
 let announceTimer = 0;
 let anchorFrame = 0;
+let headingObserver = null;
 
 /* ---------- Utilidades ---------- */
 
@@ -186,6 +191,7 @@ function setTocOpen(open, { restoreFocus = false } = {}) {
 }
 
 function updateDocInfo() {
+  docTitle.textContent = document.querySelector('.brand__name').textContent.trim();
   docName.textContent = 'Trabajo Final de Grado';
   docName.title = 'Trabajo Final de Grado';
 }
@@ -195,6 +201,7 @@ function showReader(doc, headings, { focus = true } = {}) {
   state.headings = headings;
   enhanceMediaLinks();
   updateNavigation();
+  observeHeadings();
 
   updateDocInfo();
   setView({ focus });
@@ -223,6 +230,7 @@ function extractMedia() {
 }
 
 function renderToc() {
+  hideTocTooltip();
   tocList.replaceChildren();
 
   if (!state.headings.length) {
@@ -233,20 +241,119 @@ function renderToc() {
     return;
   }
 
-  for (const heading of state.headings) {
+  for (const [index, heading] of state.headings.entries()) {
+    const fullLabel = heading.text || 'Sección sin título';
+    const row = document.createElement('div');
+    row.className = 'toc-item-row';
+
     const item = document.createElement('button');
     item.type = 'button';
     item.className = 'toc-item';
     item.dataset.level = String(heading.level);
     item.dataset.headingId = heading.id;
+    item.dataset.fullLabel = fullLabel;
+    item.setAttribute('aria-label', fullLabel);
 
     const label = document.createElement('span');
     label.className = 'toc-item__label';
-    label.textContent = heading.text || 'Sección sin título';
+    label.textContent = fullLabel;
 
-    item.append(label);
-    tocList.append(item);
+    const compactLabel = document.createElement('span');
+    compactLabel.className = 'toc-item__compact-label';
+    compactLabel.textContent = compactTocLabel(heading, index);
+    compactLabel.setAttribute('aria-hidden', 'true');
+
+    const info = document.createElement('button');
+    info.type = 'button';
+    info.className = 'toc-item-info';
+    info.textContent = 'i';
+    info.setAttribute('aria-label', `Mostrar título completo: ${fullLabel}`);
+    info.setAttribute('aria-controls', 'toc-tooltip');
+    info.setAttribute('aria-expanded', 'false');
+
+    item.append(label, compactLabel);
+    row.append(item, info);
+    tocList.append(row);
   }
+}
+
+function compactTocLabel(heading, index) {
+  const text = heading.text.trim();
+
+  if (heading.level === 1 || index === 0) {
+    return 'Portada';
+  }
+
+  if (text === 'Introducción') {
+    return 'Intro.';
+  }
+
+  if (text === 'Conclusión') {
+    return 'Cierre';
+  }
+
+  const chapter = text.match(/^Capítulo\s+(\d+)$/i);
+
+  if (chapter) {
+    return `Cap. ${chapter[1]}`;
+  }
+
+  const numberedSection = text.match(/^(\d+)\./);
+
+  if (numberedSection) {
+    return `Tema ${numberedSection[1]}`;
+  }
+
+  return text.split(/\s+/)[0] || 'Sección';
+}
+
+function isCompactToc() {
+  return (
+    workspace.classList.contains('has-open-media') &&
+    desktopQuery.matches &&
+    landscapeQuery.matches
+  );
+}
+
+function showTocTooltip(row, { pinned = false } = {}) {
+  if (!isCompactToc()) {
+    return;
+  }
+
+  const item = row.querySelector('.toc-item');
+
+  if (!item) {
+    return;
+  }
+
+  tocTooltip.textContent = item.dataset.fullLabel;
+  tocTooltip.dataset.headingId = item.dataset.headingId;
+  tocTooltip.dataset.pinned = String(pinned);
+  tocTooltip.hidden = false;
+
+  const rowRect = row.getBoundingClientRect();
+  const sidebarRect = tocSidebar.getBoundingClientRect();
+  const tooltipHalfHeight = tocTooltip.offsetHeight / 2;
+  const minTop = tooltipHalfHeight + 8;
+  const maxTop = Math.max(minTop, tocSidebar.clientHeight - tooltipHalfHeight - 8);
+  const rowCenter = rowRect.top - sidebarRect.top + rowRect.height / 2;
+
+  tocTooltip.style.top = `${Math.round(Math.max(minTop, Math.min(rowCenter, maxTop)))}px`;
+
+  tocList.querySelectorAll('.toc-item-info').forEach((button) => {
+    button.setAttribute('aria-expanded', String(row.contains(button)));
+  });
+}
+
+function hideTocTooltip() {
+  tocTooltip.hidden = true;
+  tocTooltip.textContent = '';
+  tocTooltip.removeAttribute('data-heading-id');
+  tocTooltip.removeAttribute('data-pinned');
+  tocTooltip.style.removeProperty('top');
+  tocList.querySelectorAll('.toc-item-info').forEach((button) => {
+    button.setAttribute('aria-expanded', 'false');
+  });
 }
 
 function renderMediaList() {
@@ -301,6 +408,67 @@ function updateNavigation() {
   );
 }
 
+function observeHeadings() {
+  if (headingObserver) {
+    headingObserver.disconnect();
+  }
+
+  headingObserver = new IntersectionObserver((entries) => {
+    const visibleHeadings = entries
+      .filter((entry) => entry.isIntersecting)
+      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+    if (visibleHeadings.length) {
+      setActiveTocHeading(visibleHeadings[0].target.id);
+    }
+  }, {
+    root: docPane,
+    rootMargin: '0px 0px -75% 0px'
+  });
+
+  state.headings.forEach((heading) => {
+    const element = document.getElementById(heading.id);
+
+    if (element) {
+      headingObserver.observe(element);
+    }
+  });
+
+  if (state.headings.length) {
+    setActiveTocHeading(state.headings[0].id);
+  }
+}
+
+function setActiveTocHeading(headingId) {
+  const activeItem = Array.from(tocList.querySelectorAll('.toc-item'))
+    .find((item) => item.dataset.headingId === headingId);
+
+  if (!activeItem) {
+    return;
+  }
+
+  const currentItem = tocList.querySelector('.toc-item[aria-current="location"]');
+
+  if (currentItem === activeItem) {
+    return;
+  }
+
+  if (currentItem) {
+    currentItem.removeAttribute('aria-current');
+  }
+
+  activeItem.setAttribute('aria-current', 'location');
+
+  const listRect = tocList.getBoundingClientRect();
+  const itemRect = activeItem.getBoundingClientRect();
+
+  if (itemRect.top < listRect.top) {
+    tocList.scrollTop -= listRect.top - itemRect.top;
+  } else if (itemRect.bottom > listRect.bottom) {
+    tocList.scrollTop += itemRect.bottom - listRect.bottom;
+  }
+}
+
 function openNavigationDialog(dialog) {
   if (!dialog.open) {
     dialog.showModal();
@@ -340,11 +508,31 @@ document.querySelectorAll('[data-close-dialog]').forEach((button) => {
 });
 
 tocList.addEventListener('click', (event) => {
+  const info = event.target.closest('.toc-item-info');
+
+  if (info) {
+    const row = info.closest('.toc-item-row');
+    const item = row.querySelector('.toc-item');
+    const alreadyPinned =
+      tocTooltip.dataset.pinned === 'true' &&
+      tocTooltip.dataset.headingId === item.dataset.headingId;
+
+    if (alreadyPinned) {
+      hideTocTooltip();
+    } else {
+      showTocTooltip(row, { pinned: true });
+    }
+
+    return;
+  }
+
   const item = event.target.closest('.toc-item');
 
   if (!item) {
     return;
   }
+
+  hideTocTooltip();
 
   const target = document.getElementById(item.dataset.headingId);
 
@@ -352,6 +540,7 @@ tocList.addEventListener('click', (event) => {
     return;
   }
 
+  setActiveTocHeading(target.id);
   setTocOpen(false);
   target.scrollIntoView({
     behavior: motionQuery.matches ? 'auto' : 'smooth',
@@ -359,6 +548,80 @@ tocList.addEventListener('click', (event) => {
   });
   target.focus({ preventScroll: true });
   announce(`Sección: ${target.textContent.trim().slice(0, 90)}`);
+});
+
+tocList.addEventListener('pointerover', (event) => {
+  if (event.pointerType === 'touch' || !(event.target instanceof Element)) {
+    return;
+  }
+
+  const row = event.target.closest('.toc-item-row');
+
+  if (row) {
+    showTocTooltip(row);
+  }
+});
+
+tocList.addEventListener('pointerout', (event) => {
+  if (!(event.target instanceof Element)) {
+    return;
+  }
+
+  const row = event.target.closest('.toc-item-row');
+  const isSameRow =
+    row && event.relatedTarget instanceof Node && row.contains(event.relatedTarget);
+
+  if (
+    !row ||
+    isSameRow ||
+    tocTooltip.dataset.pinned === 'true'
+  ) {
+    return;
+  }
+
+  hideTocTooltip();
+});
+
+tocList.addEventListener('focusin', (event) => {
+  if (!(event.target instanceof Element)) {
+    return;
+  }
+
+  const row = event.target.closest('.toc-item-row');
+
+  if (row) {
+    showTocTooltip(row);
+  }
+});
+
+tocList.addEventListener('focusout', (event) => {
+  if (!(event.target instanceof Element)) {
+    return;
+  }
+
+  const row = event.target.closest('.toc-item-row');
+  const isSameRow =
+    row && event.relatedTarget instanceof Node && row.contains(event.relatedTarget);
+
+  if (
+    !row ||
+    isSameRow ||
+    tocTooltip.dataset.pinned === 'true'
+  ) {
+    return;
+  }
+
+  hideTocTooltip();
+});
+
+document.addEventListener('pointerdown', (event) => {
+  if (
+    tocTooltip.dataset.pinned === 'true' &&
+    event.target instanceof Node &&
+    !tocSidebar.contains(event.target)
+  ) {
+    hideTocTooltip();
+  }
 });
 
 mediaList.addEventListener('click', (event) => {
@@ -672,13 +935,17 @@ function updateMediaSize() {
   }
 
   const barHeight = mediaBar.getBoundingClientRect().height;
+  const fallbackHeight = mediaFallback.getBoundingClientRect().height;
   const noteHeight = mediaNote.hidden ? 0 : mediaNote.getBoundingClientRect().height;
   const isDesktop = desktopQuery.matches;
 
   let stageHeight = stageHeightFor(activeMedia, width);
 
   if (isDesktop) {
-    const maxStage = Math.max(160, window.innerHeight - barHeight - 36);
+    const maxStage = Math.max(
+      160,
+      window.innerHeight - barHeight - fallbackHeight - noteHeight - 36
+    );
     stageHeight = Math.min(stageHeight, maxStage);
     mediaPanel.style.setProperty('--stage-h', `${Math.round(stageHeight)}px`);
     mediaPanel.style.removeProperty('--media-h');
@@ -686,11 +953,17 @@ function updateMediaSize() {
   }
 
   const maxPanelHeight = Math.round(workspace.clientHeight * 0.55);
-  const availableForStage = Math.max(80, maxPanelHeight - barHeight - noteHeight);
+  const availableForStage = Math.max(
+    80,
+    maxPanelHeight - barHeight - fallbackHeight - noteHeight
+  );
 
   stageHeight = Math.min(stageHeight, availableForStage);
 
-  const panelHeight = Math.min(barHeight + stageHeight + noteHeight, maxPanelHeight);
+  const panelHeight = Math.min(
+    barHeight + stageHeight + fallbackHeight + noteHeight,
+    maxPanelHeight
+  );
 
   mediaPanel.style.setProperty('--stage-h', `${Math.round(stageHeight)}px`);
   mediaPanel.style.setProperty('--media-h', `${Math.round(panelHeight)}px`);
@@ -822,9 +1095,11 @@ function openMedia(media, trigger) {
     mediaExternal.href = externalUrl;
     mediaExternal.querySelector('span').textContent = provider.externalLabel;
     mediaExternal.setAttribute('aria-label', `${provider.externalLabel}: ${media.label}`);
+    mediaFallback.textContent = `Si no se reproduce aquí, usa «${provider.externalLabel}».`;
   } else {
     mediaExternal.hidden = true;
     mediaExternal.removeAttribute('href');
+    mediaFallback.textContent = 'No hay un enlace externo disponible para este contenido.';
   }
 
   mediaNote.hidden = navigator.onLine;
@@ -850,6 +1125,8 @@ function openMedia(media, trigger) {
   }
 
   mediaPanel.classList.add('is-open');
+  workspace.classList.add('has-open-media');
+  window.requestAnimationFrame(updateMediaSize);
 
   runScrollAnchor(anchor, transitionDuration(!wasOpen));
 
@@ -873,6 +1150,8 @@ function closeMedia() {
   mediaPanel.classList.add('is-closing');
   destroyIframe();
   mediaPanel.classList.remove('is-open');
+  workspace.classList.remove('has-open-media');
+  hideTocTooltip();
   mediaPanel.setAttribute('inert', '');
   mediaPanel.setAttribute('aria-hidden', 'true');
 
@@ -947,6 +1226,12 @@ document.addEventListener('keydown', (event) => {
     return;
   }
 
+  if (!tocTooltip.hidden) {
+    event.preventDefault();
+    hideTocTooltip();
+    return;
+  }
+
   if (!desktopQuery.matches && tocSidebar.classList.contains('is-open')) {
     event.preventDefault();
     setTocOpen(false, { restoreFocus: true });
@@ -964,6 +1249,10 @@ document.addEventListener('keydown', (event) => {
 mediaClose.addEventListener('click', closeMedia);
 
 function handleResize() {
+  if (!isCompactToc()) {
+    hideTocTooltip();
+  }
+
   if (!isOpen || resizeFrame) {
     return;
   }
@@ -989,6 +1278,12 @@ function handleResize() {
 }
 
 window.addEventListener('resize', handleResize, { passive: true });
+
+workspace.addEventListener('transitionend', (event) => {
+  if (event.target === workspace && event.propertyName === 'grid-template-columns' && isOpen) {
+    updateMediaSize();
+  }
+});
 
 function updateConnectionNote() {
   if (!isOpen) {

@@ -305,6 +305,10 @@ a {
   white-space: nowrap;
 }
 
+.topbar__doc-title {
+  display: none;
+}
+
 .topbar__actions {
   grid-area: actions;
   display: flex;
@@ -378,21 +382,7 @@ a {
 .font-controls {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface);
-  overflow: hidden;
-}
-
-.font-controls .icon-button {
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: 0;
-}
-
-.font-controls .icon-button + .icon-button {
-  border-left: 1px solid var(--border);
+  gap: 4px;
 }
 
 .theme-icon--sun {
@@ -1370,6 +1360,12 @@ a {
   max-height: none;
 }
 
+.toc-item-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .toc-item,
 .media-list-item {
   width: 100%;
@@ -1383,8 +1379,19 @@ a {
 .toc-item {
   position: relative;
   display: block;
+  flex: 1 1 auto;
+  min-width: 0;
   padding: 10px 8px;
   font-family: var(--font-ui);
+}
+
+.toc-item-info,
+.toc-item__compact-label {
+  display: none;
+}
+
+.toc-tooltip {
+  display: none;
 }
 
 .toc-item::before {
@@ -1442,6 +1449,11 @@ a {
 .toc-item:hover,
 .media-list-item:hover {
   background: var(--surface-soft);
+}
+
+.toc-item[aria-current="location"] {
+  background: var(--surface-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 .toc-item__label {
@@ -1951,24 +1963,38 @@ a {
   line-height: 1.45;
 }
 
+.media-fallback {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
 .media-foot {
   display: none;
 }
 
 .media-panel__bar,
 .media-stage,
+.media-fallback,
 .media-foot {
   transition: opacity 180ms ease;
 }
 
 .media-panel:not(.is-open) .media-panel__bar,
 .media-panel:not(.is-open) .media-stage,
+.media-panel:not(.is-open) .media-fallback,
 .media-panel:not(.is-open) .media-foot {
   opacity: 0;
 }
 
 .media-panel.is-open .media-panel__bar,
 .media-panel.is-open .media-stage,
+.media-panel.is-open .media-fallback,
 .media-panel.is-open .media-foot {
   opacity: 1;
 }
@@ -2080,6 +2106,141 @@ a {
   }
 }
 
+@media (min-width: 900px) and (orientation: landscape) {
+  .workspace {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr) minmax(0, 0fr);
+    transition: grid-template-columns var(--dur-open) var(--ease);
+  }
+
+  .workspace.has-open-media {
+    grid-template-columns: calc(2rem + 3em) minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .toc-sidebar {
+    width: auto;
+    min-width: 0;
+  }
+
+  .workspace.has-open-media .toc-sidebar__header {
+    justify-content: center;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .workspace.has-open-media .toc-sidebar {
+    overflow: visible;
+  }
+
+  .workspace.has-open-media .toc-sidebar .navigation-dialog__kicker {
+    display: none;
+  }
+
+  .workspace.has-open-media .toc-list {
+    padding-right: 2px;
+    padding-left: 2px;
+  }
+
+  .workspace.has-open-media .toc-item-row {
+    gap: 2px;
+  }
+
+  .workspace.has-open-media .toc-item {
+    width: auto;
+    padding: 8px 2px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .workspace.has-open-media .toc-item[data-level] {
+    padding-left: 2px;
+  }
+
+  .workspace.has-open-media .toc-item::before {
+    display: none;
+  }
+
+  .workspace.has-open-media .toc-item__label {
+    display: none;
+  }
+
+  .workspace.has-open-media .toc-item__compact-label {
+    display: block;
+    overflow: hidden;
+    font-size: 0.78rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .workspace.has-open-media .toc-item-info {
+    display: none;
+    flex: 0 0 24px;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-style: italic;
+    font-weight: 800;
+  }
+
+  .workspace.has-open-media .toc-item-info:hover {
+    background: var(--surface-soft);
+    color: var(--text);
+  }
+
+  .workspace.has-open-media .toc-tooltip {
+    display: block;
+    position: absolute;
+    left: calc(100% + 8px);
+    z-index: 40;
+    width: max-content;
+    max-width: min(320px, calc(50vw - 120px));
+    max-height: calc(100% - 16px);
+    padding: 10px 12px;
+    overflow-y: auto;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-soft);
+    color: var(--text);
+    font-size: 0.8rem;
+    line-height: 1.45;
+    pointer-events: none;
+    transform: translateY(-50%);
+  }
+
+  .workspace.has-open-media .toc-item-row:hover .toc-item__compact-label,
+  .workspace.has-open-media .toc-item-row:focus-within .toc-item__compact-label {
+    color: var(--accent);
+  }
+
+  .media-panel {
+    width: auto;
+    min-width: 0;
+    transition: none;
+  }
+
+  .media-panel.is-open {
+    width: auto;
+  }
+
+  .media-panel__inner {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (min-width: 900px) and (orientation: landscape) and (hover: none) {
+  .workspace.has-open-media .toc-item-info {
+    display: grid;
+  }
+}
+
 @media (min-width: 900px) and (max-height: 720px) {
   .media-foot {
     display: none;
@@ -2110,11 +2271,32 @@ a {
   .topbar__doc {
     grid-area: doc;
     align-items: flex-start;
+    gap: 2px;
     text-align: left;
   }
 
   .brand__name {
-    font-size: 0.98rem;
+    display: none;
+  }
+
+  .badge--proto {
+    display: none;
+  }
+
+  .topbar__doc-title {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 0.86rem;
+    font-weight: 720;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .topbar__doc-name {
+    color: var(--text-muted);
+    font-size: 0.72rem;
   }
 
   .icon-button--wide {
@@ -2145,14 +2327,6 @@ a {
     gap: 6px;
   }
 
-  .badge--proto {
-    display: none;
-  }
-
-  .topbar__doc-name {
-    font-size: 0.82rem;
-  }
-
   .media-panel__bar {
     padding: 9px 10px 8px;
   }
@@ -2172,6 +2346,10 @@ a {
     padding-right: 10px;
   }
 
+  .topbar__actions {
+    gap: 4px;
+  }
+
   .brand {
     gap: 6px;
   }
@@ -2182,13 +2360,7 @@ a {
     border-radius: 9px;
   }
 
-  .brand__name {
-    font-size: 0.92rem;
-  }
 
-  .font-controls .icon-button {
-    width: 44px;
-  }
 
   .landing {
     padding-left: 14px;
