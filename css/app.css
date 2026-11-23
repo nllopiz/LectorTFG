@@ -1810,6 +1810,14 @@ a {
     white-space: nowrap;
   }
 
+  .app.has-open-media .topbar__doc-title {
+    display: -webkit-box;
+    max-width: 14ch;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+  }
+
   .topbar__doc-name {
     color: var(--text-muted);
     font-size: 0.72rem;

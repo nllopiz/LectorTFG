@@ -42,6 +42,7 @@ const themeToggle = document.getElementById('theme-toggle');
 const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 const liveRegion = document.getElementById('sr-status');
 
+const appContainer = document.querySelector('.app');
 const workspace = document.getElementById('workspace');
 const mediaPanel = document.getElementById('media-panel');
 const mediaPanelInner = mediaPanel.querySelector('.media-panel__inner');
@@ -1251,6 +1252,7 @@ function openMedia(media, trigger) {
   }
 
   mediaPanel.classList.add('is-open');
+  appContainer.classList.add('has-open-media');
   workspace.classList.add('has-open-media');
   window.requestAnimationFrame(updateMediaSize);
 
@@ -1276,6 +1278,7 @@ function closeMedia() {
   mediaPanel.classList.add('is-closing');
   destroyIframe();
   mediaPanel.classList.remove('is-open');
+  appContainer.classList.remove('has-open-media');
   workspace.classList.remove('has-open-media');
   hideTocTooltip();
   mediaPanel.setAttribute('inert', '');
