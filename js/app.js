@@ -19,7 +19,6 @@ const docSheet = document.getElementById('doc-sheet');
 const docContent = document.getElementById('doc-content');
 const docInfo = document.getElementById('doc-info');
 const docName = document.getElementById('doc-name');
-const docMeta = document.getElementById('doc-meta');
 const fontControls = document.getElementById('font-controls');
 const fontDecrease = document.getElementById('font-decrease');
 const fontIncrease = document.getElementById('font-increase');
@@ -187,9 +186,8 @@ function setTocOpen(open, { restoreFocus = false } = {}) {
 }
 
 function updateDocInfo() {
-  docName.textContent = DOCUMENT_NAME;
-  docName.title = DOCUMENT_NAME;
-  docMeta.textContent = 'Portada · Introducción · 4 capítulos · Conclusión';
+  docName.textContent = 'Trabajo Final de Grado';
+  docName.title = 'Trabajo Final de Grado';
 }
 
 function showReader(doc, headings, { focus = true } = {}) {

@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="es" class="no-transitions" data-theme="dark">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#2B1F10">
-  <meta name="description" content="Lector TFG: una experiencia de lectura para un documento con portada, introducción, cuatro capítulos y conclusión.">
-  <title>Lector TFG · WebMili</title>
+  <meta name="description" content="Lector TFG: una experiencia de lectura">
+  <title>Lector TFG</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/app.css">
   <script src="js/theme-init.js"></script>
 </head>
+
 <body>
   <a class="skip-link" id="skip-link" href="#doc-content">Saltar al contenido</a>
 
@@ -18,50 +20,63 @@
     <header class="topbar">
       <div class="brand">
         <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v18H6.5A2.5 2.5 0 0 1 4 18.5z"/>
-            <path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H13v18h4.5a2.5 2.5 0 0 0 2.5-2.5z"/>
-            <path d="m15.8 9.2-3.1 2.8 3.1 2.8z" fill="currentColor" stroke="none"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2.2 21.8 14.3C19.1 17.3 15.7 19 12 19s-7.1-1.7-9.8-4.7L12 2.2Z" fill="currentColor" />
+            <path d="m12 4.5 7.7 9.8c-2.1 2.1-4.8 3.2-7.7 3.2s-5.6-1.1-7.7-3.2L12 4.5Z" stroke="var(--accent)"
+              stroke-width=".7" />
+            <circle cx="12" cy="9" r="1.45" fill="var(--accent)" />
+            <circle cx="12" cy="9" r=".55" fill="currentColor" />
+            <path d="M12 11.1v3.5m-2.3-3.1 1.4 1.1m3.2-1.1-1.4 1.1" stroke="var(--accent)" stroke-width=".7" />
           </svg>
         </span>
-        <span class="brand__name">WebMili</span>
+        <span class="brand__name">El cuándo de mi por qué</span>
         <span class="badge badge--proto">Documento</span>
       </div>
 
       <div class="topbar__doc" id="doc-info" hidden>
         <span class="topbar__doc-name" id="doc-name"></span>
-        <span class="topbar__doc-note" id="doc-meta"></span>
       </div>
 
       <div class="topbar__actions">
         <div class="font-controls" id="font-controls" role="group" aria-label="Tamaño del texto" hidden>
-          <button id="font-decrease" class="icon-button icon-button--text" type="button" aria-label="Reducir el tamaño del texto" title="Texto más pequeño" disabled>−A</button>
-          <button id="font-increase" class="icon-button icon-button--text" type="button" aria-label="Aumentar el tamaño del texto" title="Texto más grande">A+</button>
+          <button id="font-decrease" class="icon-button icon-button--text" type="button"
+            aria-label="Reducir el tamaño del texto" title="Texto más pequeño" disabled>−A</button>
+          <button id="font-increase" class="icon-button icon-button--text" type="button"
+            aria-label="Aumentar el tamaño del texto" title="Texto más grande">A+</button>
         </div>
 
-        <button id="toc-button" class="icon-button icon-button--wide" type="button" aria-label="Abrir índice de contenidos" aria-controls="toc-sidebar" aria-expanded="false" title="Índice" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>
+        <button id="toc-button" class="icon-button icon-button--wide" type="button"
+          aria-label="Abrir índice de contenidos" aria-controls="toc-sidebar" aria-expanded="false" title="Índice"
+          hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" />
           </svg>
           <span class="icon-button__label">Índice</span>
         </button>
 
-        <button id="media-button" class="icon-button icon-button--wide" type="button" aria-label="Abrir lista de medios" title="Medios" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3" y="5" width="18" height="14" rx="2"/>
-            <path d="m10 9 5 3-5 3z" fill="currentColor" stroke="none"/>
+        <button id="media-button" class="icon-button icon-button--wide" type="button" aria-label="Abrir lista de medios"
+          title="Medios" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <path d="m10 9 5 3-5 3z" fill="currentColor" stroke="none" />
           </svg>
           <span class="icon-button__label">Medios</span>
           <span class="icon-button__count" id="media-count" hidden>0</span>
         </button>
 
-        <button id="theme-toggle" class="icon-button" type="button" aria-label="Cambiar a tema oscuro" title="Cambiar de tema">
-          <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M20.5 14.4A8.4 8.4 0 0 1 9.6 3.5 8.5 8.5 0 1 0 20.5 14.4Z"/>
+        <button id="theme-toggle" class="icon-button" type="button" aria-label="Cambiar a tema oscuro"
+          title="Cambiar de tema">
+          <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.5 14.4A8.4 8.4 0 0 1 9.6 3.5 8.5 8.5 0 1 0 20.5 14.4Z" />
           </svg>
-          <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="4"/>
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/>
+          <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path
+              d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42" />
           </svg>
         </button>
       </div>
@@ -84,7 +99,7 @@
         <article class="doc-sheet" id="doc-sheet">
           <div class="doc-content" id="doc-content">
             <section class="document-cover" aria-labelledby="document-title">
-              <p class="doc-kicker">Trabajo de fin de grado</p>
+              <p class="doc-kicker">Trabajo Final de Grado</p>
               <h1 id="document-title">El cuándo de mi por qué</h1>
               <p class="doc-lede">Título y datos de autoría pendientes de completar.</p>
               <p class="document-cover__note">Portada</p>
@@ -93,6 +108,40 @@
             <section aria-labelledby="introduction-title">
               <h2 id="introduction-title">Introducción</h2>
               <p class="document-placeholder">El texto de la introducción se añadirá aquí.</p>
+              <div>
+                <p class="c19"><span class="c24">La revitalizaci&oacute;n del folklore argentino en la era del
+                    Tecnoceno.</span></p>
+                <h2 class="c18" id="h.xanwxp3awycu"><span class="c9">1. La problematizaci&oacute;n de la identidad
+                    cultural, el
+                    consumo y las industrias culturales desde las ciencias sociales</span></h2>
+                <p class="c14"><span class="c6 c7">&ldquo;&laquo;Cambio cultural&raquo; es un eufemismo cort&eacute;s
+                    que disimula
+                    el proceso en virtud del cual algunas formas y pr&aacute;cticas culturales son desplazadas del
+                    centro de la
+                    vida popular, marginadas activamente. En vez de limitarse a &laquo;caer en desuso&raquo; a causa de
+                    la Larga
+                    Marcha hacia la modernizaci&oacute;n, las cosas son activamente apartadas para que otra pueda ocupar
+                    su
+                    lugar.&rdquo; - Stuart Hall (1984)</span></p>
+                <p class="c4"><span class="c1">Argentina se caracteriza por su capacidad de recibir e integrar grandes
+                    masas
+                    migratorias, proceso que forma parte constitutiva de su identidad nacional. La expresi&oacute;n
+                    &ldquo;El
+                    argentino nace donde quiere&rdquo; invita a preguntarse: &iquest;qu&eacute; significa ser
+                    argentino?</span>
+                </p>
+                <p class="c4"><span class="c1">Las naciones no constituyen entidades materiales preexistentes, sino
+                    construcciones
+                    humanas que habitan en la mente y el coraz&oacute;n de sus integrantes. En palabras del
+                    polit&oacute;logo
+                    Benedict Anderson, son &ldquo;comunidades pol&iacute;ticas imaginadas&rdquo; (1993:23) .</span></p>
+                <p class="c0"><span class="c1"></span></p>
+                <p class="c4"><span class="c6">Ver video </span><span class="c16"><a class="c12"
+                      href="https://www.google.com/url?q=https://www.youtube.com/watch?v%3DaRk5vAI9xHc%26pp%3DygUcbGEgdmlkYSBlcmEgbWFzIGNvcnRhIG1pbG8gag%253D%253D&amp;sa=D&amp;source=editors&amp;ust=1795400005484459&amp;usg=AOvVaw36rXbNcctCr2JGvfdzvLlF">Milo
+                      J - La Vida Era M&aacute;s Corta (Official Video)</a></span></p>
+                <p class="c0"><span class="c1"></span></p>
+              </div>
+
             </section>
 
             <section aria-labelledby="chapter-1-title">
@@ -128,16 +177,20 @@
           <header class="media-panel__bar">
             <span class="media-provider" id="media-provider" data-provider="youtube">YouTube</span>
             <span class="media-label" id="media-label"></span>
-            <button class="media-close" id="media-close" type="button" aria-label="Cerrar reproductor y volver al documento" title="Cerrar (Esc)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
-                <path d="M6 6l12 12M18 6 6 18"/>
+            <button class="media-close" id="media-close" type="button"
+              aria-label="Cerrar reproductor y volver al documento" title="Cerrar (Esc)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+                aria-hidden="true">
+                <path d="M6 6l12 12M18 6 6 18" />
               </svg>
               <span>Cerrar</span>
             </button>
-            <a class="media-external" id="media-external" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">
+            <a class="media-external" id="media-external" href="https://www.youtube.com/" target="_blank"
+              rel="noopener noreferrer">
               <span>Abrir en YouTube</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M7 17 17 7M7 7h10v10"/>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <path d="M7 17 17 7M7 7h10v10" />
               </svg>
             </a>
           </header>
@@ -153,7 +206,8 @@
           <div class="media-foot" aria-hidden="true">
             <div class="media-foot__card">
               <span class="media-foot__eyebrow">Mientras lees</span>
-              <p><strong>El documento sigue disponible.</strong> Puedes leer y desplazarte mientras el reproductor está abierto; al cerrar, el audio o el video se detiene.</p>
+              <p><strong>El documento sigue disponible.</strong> Puedes leer y desplazarte mientras el reproductor está
+                abierto; al cerrar, el audio o el video se detiene.</p>
             </div>
           </div>
         </div>
@@ -171,11 +225,13 @@
         <p class="navigation-dialog__kicker">Documento</p>
         <h2 id="media-dialog-title">Medios</h2>
       </div>
-      <button class="dialog-close" type="button" data-close-dialog="media-dialog" aria-label="Cerrar lista de medios">Cerrar</button>
+      <button class="dialog-close" type="button" data-close-dialog="media-dialog"
+        aria-label="Cerrar lista de medios">Cerrar</button>
     </div>
     <div class="media-list" id="media-list" aria-label="Lista de medios del documento"></div>
   </dialog>
 
   <script type="module" src="js/app.js"></script>
 </body>
+
 </html>

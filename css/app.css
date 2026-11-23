@@ -255,8 +255,8 @@ a {
 }
 
 .brand__mark svg {
-  width: 18px;
-  height: 18px;
+  width: 21px;
+  height: 21px;
 }
 
 .brand__name {
@@ -301,16 +301,6 @@ a {
   font-size: 0.86rem;
   font-weight: 650;
   letter-spacing: -0.005em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.topbar__doc-note {
-  max-width: 100%;
-  overflow: hidden;
-  color: var(--text-faint);
-  font-size: 0.68rem;
-  letter-spacing: 0.01em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1391,9 +1381,26 @@ a {
 }
 
 .toc-item {
+  position: relative;
   display: block;
   padding: 10px 8px;
   font-family: var(--font-ui);
+}
+
+.toc-item::before {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #A58146;
+  content: "";
+  transform: translateY(-50%);
+}
+
+.toc-item[data-level="1"]::before {
+  display: none;
 }
 
 .toc-item[data-level="2"] {
@@ -1404,16 +1411,32 @@ a {
   padding-left: 36px;
 }
 
+.toc-item[data-level="3"]::before {
+  left: 22px;
+}
+
 .toc-item[data-level="4"] {
   padding-left: 50px;
+}
+
+.toc-item[data-level="4"]::before {
+  left: 36px;
 }
 
 .toc-item[data-level="5"] {
   padding-left: 64px;
 }
 
+.toc-item[data-level="5"]::before {
+  left: 50px;
+}
+
 .toc-item[data-level="6"] {
   padding-left: 78px;
+}
+
+.toc-item[data-level="6"]::before {
+  left: 64px;
 }
 
 .toc-item:hover,
@@ -2128,10 +2151,6 @@ a {
 
   .topbar__doc-name {
     font-size: 0.82rem;
-  }
-
-  .topbar__doc-note {
-    font-size: 0.66rem;
   }
 
   .media-panel__bar {
