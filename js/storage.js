@@ -1,9 +1,10 @@
 /**
  * Preferencias locales de WebMili.
- * Solo se guardan tema y tamaño de texto. El documento nunca se almacena aquí.
+ * Se guardan tema, tamaño de texto y posición de lectura; el contenido nunca se almacena.
  */
 
 const PREFS_KEY = 'webmili:prefs:v1';
+const READING_POSITION_KEY = 'webmili:reading-position:v1';
 const THEMES = new Set(['system', 'light', 'dark']);
 
 export const FONT_MIN = 16;
@@ -64,4 +65,54 @@ export function writePrefs(patch) {
   }
 
   return next;
+}
+
+function normalizeReadingPosition(value) {
+  if (
+    !value ||
+    typeof value.anchorId !== 'string' ||
+    !value.anchorId.trim() ||
+    !Number.isFinite(value.offset)
+  ) {
+    return null;
+  }
+
+  return {
+    anchorId: value.anchorId.trim(),
+    offset: value.offset
+  };
+}
+
+export function readReadingPosition() {
+  try {
+    const raw = window.localStorage.getItem(READING_POSITION_KEY);
+
+    return raw ? normalizeReadingPosition(JSON.parse(raw)) : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+export function writeReadingPosition(position) {
+  const normalized = normalizeReadingPosition(position);
+
+  if (!normalized) {
+    return false;
+  }
+
+  try {
+    window.localStorage.setItem(READING_POSITION_KEY, JSON.stringify(normalized));
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function clearReadingPosition() {
+  try {
+    window.localStorage.removeItem(READING_POSITION_KEY);
+    return true;
+  } catch (error) {
+    return false;
+  }
 }

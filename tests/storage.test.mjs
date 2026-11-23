@@ -9,6 +9,9 @@ globalThis.window = {
     },
     setItem(key, value) {
       this.values.set(key, value);
+    },
+    removeItem(key) {
+      this.values.delete(key);
     }
   }
 };
@@ -18,7 +21,10 @@ const {
   FONT_MAX,
   FONT_MIN,
   normalizeFontSize,
+  clearReadingPosition,
+  readReadingPosition,
   readPrefs,
+  writeReadingPosition,
   writePrefs
 } = await import('../js/storage.js');
 
@@ -48,4 +54,27 @@ test('theme and font preferences persist without legacy document settings', () =
     JSON.parse(window.localStorage.values.get('webmili:prefs:v1')),
     { theme: 'light', fontSize: 22 }
   );
+});
+
+test('reading position persists separately from preferences', () => {
+  window.localStorage.values.clear();
+  const position = { anchorId: 'chapter-2', offset: -148.5 };
+
+  assert.equal(writeReadingPosition(position), true);
+  assert.deepEqual(readReadingPosition(), position);
+  assert.equal(window.localStorage.values.has('webmili:prefs:v1'), false);
+
+  clearReadingPosition();
+  assert.equal(readReadingPosition(), null);
+});
+
+test('invalid reading positions are ignored', () => {
+  window.localStorage.values.clear();
+  window.localStorage.values.set(
+    'webmili:reading-position:v1',
+    JSON.stringify({ anchorId: '  ', offset: 12 })
+  );
+
+  assert.equal(readReadingPosition(), null);
+  assert.equal(writeReadingPosition({ anchorId: 'chapter-1', offset: NaN }), false);
 });

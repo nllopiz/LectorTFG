@@ -7,6 +7,7 @@ Lector web dedicado a un trabajo final de grado. El documento está incluido en 
 - Portada, introducción, cuatro capítulos y conclusión.
 - Índice generado desde los encabezados, con navegación lateral responsive.
 - Tema claro/oscuro y tamaño de lectura ajustable; las preferencias se guardan en el dispositivo.
+- La lectura se retoma desde la última posición; solo se guarda localmente el encabezado y su desplazamiento, no el contenido.
 - Reproducción integrada de enlaces de YouTube y Spotify, con opción para abrirlos en el servicio original.
 - Navegación por teclado y soporte para movimiento reducido.
 

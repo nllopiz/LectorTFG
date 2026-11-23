@@ -10,7 +10,10 @@ import {
   FONT_MIN,
   FONT_STEP,
   normalizeFontSize,
+  clearReadingPosition,
+  readReadingPosition,
   readPrefs,
+  writeReadingPosition,
   writePrefs
 } from './storage.js';
 
@@ -99,6 +102,9 @@ let resizeTimer = 0;
 let resizeFrame = 0;
 let announceTimer = 0;
 let anchorFrame = 0;
+let readingPositionTimer = 0;
+let readingPositionWarningShown = false;
+let readingPositionReady = false;
 let headingObserver = null;
 
 /* ---------- Utilidades ---------- */
@@ -747,6 +753,7 @@ function changeFontSize(delta) {
   }
 
   applyFontSize(next);
+  scheduleReadingPositionSave();
   state.prefs = writePrefs({ ...state.prefs, fontSize: next });
   announce(`Tamaño del texto: ${next} píxeles.`);
 }
@@ -820,6 +827,134 @@ function runScrollAnchor(anchor, duration) {
   };
 
   window.requestAnimationFrame(step);
+}
+
+function currentReadingPosition() {
+  if (docPane.scrollTop <= 1 || !state.headings.length) {
+    return null;
+  }
+
+  const paneTop = docPane.getBoundingClientRect().top;
+  let firstHeading = null;
+  let currentHeading = null;
+
+  for (const item of state.headings) {
+    const heading = document.getElementById(item.id);
+
+    if (!heading || !docContent.contains(heading)) {
+      continue;
+    }
+
+    if (!firstHeading) {
+      firstHeading = heading;
+    }
+
+    if (heading.getBoundingClientRect().top <= paneTop + 1) {
+      currentHeading = heading;
+    } else {
+      break;
+    }
+  }
+
+  const anchor = currentHeading || firstHeading;
+
+  return anchor
+    ? {
+        anchorId: anchor.id,
+        offset: anchor.getBoundingClientRect().top - paneTop
+      }
+    : null;
+}
+
+function warnReadingPositionStorage() {
+  if (readingPositionWarningShown) {
+    return;
+  }
+
+  readingPositionWarningShown = true;
+  showToast('El navegador no permitió guardar tu posición de lectura.', 'warning');
+}
+
+function saveReadingPosition() {
+  readingPositionTimer = 0;
+
+  if (!readingPositionReady) {
+    return;
+  }
+
+  if (docPane.scrollTop <= 1) {
+    if (!clearReadingPosition()) {
+      warnReadingPositionStorage();
+    }
+
+    return;
+  }
+
+  const position = currentReadingPosition();
+
+  if (position && !writeReadingPosition(position)) {
+    warnReadingPositionStorage();
+  }
+}
+
+function scheduleReadingPositionSave() {
+  if (!readingPositionReady) {
+    return;
+  }
+
+  window.clearTimeout(readingPositionTimer);
+  readingPositionTimer = window.setTimeout(saveReadingPosition, 250);
+}
+
+function flushReadingPosition() {
+  window.clearTimeout(readingPositionTimer);
+  saveReadingPosition();
+}
+
+function restoreReadingPosition() {
+  const saved = readReadingPosition();
+
+  if (!saved) {
+    readingPositionReady = true;
+    return;
+  }
+
+  const restore = () => {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const anchor = document.getElementById(saved.anchorId);
+
+        if (!anchor || !docContent.contains(anchor)) {
+          clearReadingPosition();
+          readingPositionReady = true;
+          return;
+        }
+
+        const paneTop = docPane.getBoundingClientRect().top;
+        const delta = anchor.getBoundingClientRect().top - paneTop - saved.offset;
+
+        if (!Number.isFinite(delta)) {
+          clearReadingPosition();
+          readingPositionReady = true;
+          return;
+        }
+
+        readingPositionReady = true;
+        docPane.scrollTop = Math.max(0, docPane.scrollTop + delta);
+
+        if (docPane.scrollTop > 1) {
+          showToast('Se retomó la lectura desde tu última posición.', 'info', 4000);
+          announce('Se retomó la lectura desde tu última posición.');
+        }
+      });
+    });
+  };
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(restore, restore);
+  } else {
+    restore();
+  }
 }
 
 /* ---------- Panel de medios (Hito 0 conservado) ---------- */
@@ -1237,6 +1372,8 @@ document.addEventListener('keydown', (event) => {
 mediaClose.addEventListener('click', closeMedia);
 
 function handleResize() {
+  scheduleReadingPositionSave();
+
   if (!isCompactToc()) {
     hideTocTooltip();
   }
@@ -1302,6 +1439,9 @@ fontIncrease.addEventListener('click', () => changeFontSize(FONT_STEP));
 applyFontSize(state.prefs.fontSize);
 syncThemeButton();
 showReader(prepareDocument(docContent).headings, { focus: false });
+docPane.addEventListener('scroll', scheduleReadingPositionSave, { passive: true });
+window.addEventListener('pagehide', flushReadingPosition);
+restoreReadingPosition();
 
 window.requestAnimationFrame(() => {
   window.requestAnimationFrame(() => {
