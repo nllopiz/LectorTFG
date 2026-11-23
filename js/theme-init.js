@@ -20,6 +20,6 @@
   var themeColorMeta = document.querySelector('meta[name="theme-color"]');
 
   if (themeColorMeta) {
-    themeColorMeta.setAttribute('content', theme === 'dark' ? '#2B1F10' : '#F3EFDD');
+    themeColorMeta.setAttribute('content', theme === 'dark' ? '#4E381E' : '#F7EBD1');
   }
 })();

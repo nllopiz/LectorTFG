@@ -716,7 +716,7 @@ function syncThemeButton() {
   themeToggle.title = nextLabel;
 
   if (themeColorMeta) {
-    themeColorMeta.setAttribute('content', isDark ? '#2B1F10' : '#F3EFDD');
+    themeColorMeta.setAttribute('content', isDark ? '#4E381E' : '#F7EBD1');
   }
 }
 
