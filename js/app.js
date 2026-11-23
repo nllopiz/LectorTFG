@@ -194,7 +194,7 @@ function showReader(headings, { focus = true } = {}) {
     docPane.focus({ preventScroll: true });
   }
 
-  announce(`Documento abierto: ${DOCUMENT_NAME}.`);
+  announce(`Lectura abierta: ${DOCUMENT_NAME}.`);
 }
 
 /* ---------- Índice y lista de medios ---------- */

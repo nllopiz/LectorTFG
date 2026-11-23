@@ -30,7 +30,6 @@
           </svg>
         </span>
         <span class="brand__name">El cuándo de mi por qué</span>
-        <span class="badge badge--proto">Documento</span>
       </div>
 
       <div class="topbar__doc" id="doc-info" hidden>
@@ -42,6 +41,7 @@
         <div class="font-controls" id="font-controls" role="group" aria-label="Tamaño del texto" hidden>
           <button id="font-decrease" class="icon-button icon-button--text" type="button"
             aria-label="Reducir el tamaño del texto" title="Texto más pequeño" disabled>−A</button>
+          <span class="font-controls__label">Texto</span>
           <button id="font-increase" class="icon-button icon-button--text" type="button"
             aria-label="Aumentar el tamaño del texto" title="Texto más grande">A+</button>
         </div>
@@ -67,8 +67,8 @@
           <span class="icon-button__count" id="media-count" hidden>0</span>
         </button>
 
-        <button id="theme-toggle" class="icon-button" type="button" aria-label="Cambiar a tema oscuro"
-          title="Cambiar de tema">
+        <button id="theme-toggle" class="icon-button icon-button--wide" type="button"
+          aria-label="Cambiar a tema oscuro" title="Cambiar de tema">
           <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M20.5 14.4A8.4 8.4 0 0 1 9.6 3.5 8.5 8.5 0 1 0 20.5 14.4Z" />
@@ -79,6 +79,7 @@
             <path
               d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42" />
           </svg>
+          <span class="icon-button__label">Tema</span>
         </button>
       </div>
     </header>
@@ -87,7 +88,6 @@
       <aside class="toc-sidebar" id="toc-sidebar" aria-labelledby="toc-title" aria-hidden="true" inert>
         <header class="toc-sidebar__header">
           <div>
-            <p class="navigation-dialog__kicker">Documento</p>
             <h2 id="toc-title">Índice</h2>
           </div>
           <button class="toc-sidebar__close" id="toc-close" type="button" aria-label="Cerrar índice">Cerrar</button>
@@ -97,7 +97,7 @@
       </aside>
       <button class="toc-backdrop" id="toc-backdrop" type="button" aria-label="Cerrar índice" hidden></button>
 
-      <div class="doc-pane" id="doc-pane" tabindex="-1" aria-label="Documento">
+      <div class="doc-pane" id="doc-pane" tabindex="-1" aria-label="Contenido de lectura">
         <article class="doc-sheet" id="doc-sheet">
           <div class="doc-content" id="doc-content">
             <section class="document-cover" aria-labelledby="document-title">
@@ -117,9 +117,9 @@
               <div>
                 <p class="c19"><span class="c24">La revitalizaci&oacute;n del folklore argentino en la era del
                     Tecnoceno.</span></p>
-                <h2 class="c18" id="h.xanwxp3awycu"><span class="c9">1. La problematizaci&oacute;n de la identidad
+                <h3 class="c18" id="h.xanwxp3awycu"><span class="c9">1. La problematizaci&oacute;n de la identidad
                     cultural, el
-                    consumo y las industrias culturales desde las ciencias sociales</span></h2>
+                    consumo y las industrias culturales desde las ciencias sociales</span></h3>
                 <p class="c14"><span class="c6 c7">&ldquo;&laquo;Cambio cultural&raquo; es un eufemismo cort&eacute;s
                     que disimula
                     el proceso en virtud del cual algunas formas y pr&aacute;cticas culturales son desplazadas del
@@ -223,13 +223,12 @@
   <dialog class="navigation-dialog" id="media-dialog" aria-labelledby="media-dialog-title">
     <div class="navigation-dialog__header">
       <div>
-        <p class="navigation-dialog__kicker">Documento</p>
         <h2 id="media-dialog-title">Medios</h2>
       </div>
       <button class="dialog-close" type="button" data-close-dialog="media-dialog"
         aria-label="Cerrar lista de medios">Cerrar</button>
     </div>
-    <div class="media-list" id="media-list" aria-label="Lista de medios del documento"></div>
+    <div class="media-list" id="media-list" aria-label="Lista de medios"></div>
   </dialog>
 
   <script type="module" src="js/app.js"></script>

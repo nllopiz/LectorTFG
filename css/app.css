@@ -1,6 +1,6 @@
 /* ============================================================
    WebMili · Lector TFG
-   Documento, navegación y panel de medios.
+   Contenido, navegación y panel de medios.
    ============================================================ */
 
 @font-face {
@@ -266,23 +266,6 @@ a {
   white-space: nowrap;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  min-height: 20px;
-  padding: 2px 7px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface-soft);
-  color: var(--text-muted);
-  font-size: 0.63rem;
-  font-weight: 800;
-  letter-spacing: 0.09em;
-  line-height: 1;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 .topbar__doc {
   grid-area: doc;
   display: flex;
@@ -360,7 +343,8 @@ a {
   padding: 0 12px;
 }
 
-.icon-button__label {
+.icon-button__label,
+.font-controls__label {
   font-size: 0.76rem;
   font-weight: 700;
 }
@@ -383,6 +367,12 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+.font-controls__label {
+  min-width: 38px;
+  color: var(--text-muted);
+  text-align: center;
 }
 
 .theme-icon--sun {
@@ -516,7 +506,7 @@ a {
   border-bottom: 1px solid var(--border);
 }
 
-/* ---------- Documento ---------- */
+/* ---------- Contenido ---------- */
 
 .doc-sheet {
   width: 100%;
@@ -1027,15 +1017,6 @@ a {
   padding: 16px 18px;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
-}
-
-.navigation-dialog__kicker {
-  margin: 0 0 2px;
-  color: var(--accent);
-  font-size: 0.66rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
 }
 
 .navigation-dialog h2 {
@@ -1674,10 +1655,6 @@ a {
     overflow: visible;
   }
 
-  .workspace.has-open-media .toc-sidebar .navigation-dialog__kicker {
-    display: none;
-  }
-
   .workspace.has-open-media .toc-list {
     padding-right: 2px;
     padding-left: 2px;
@@ -1821,10 +1798,6 @@ a {
     display: none;
   }
 
-  .badge--proto {
-    display: none;
-  }
-
   .topbar__doc-title {
     display: block;
     max-width: 100%;
@@ -1846,13 +1819,9 @@ a {
     padding: 0;
   }
 
-  .icon-button__label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
+  .icon-button__label,
+  .font-controls__label {
+    display: none;
   }
 
 }
