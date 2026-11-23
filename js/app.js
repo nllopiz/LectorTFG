@@ -247,6 +247,9 @@ function renderToc() {
     item.dataset.headingId = heading.id;
     item.dataset.fullLabel = fullLabel;
     item.setAttribute('aria-label', fullLabel);
+    if (fullLabel.length > 56) {
+      item.title = fullLabel;
+    }
 
     const label = document.createElement('span');
     label.className = 'toc-item__label';

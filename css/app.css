@@ -52,7 +52,8 @@
   --accent-strong: #3A2917;
   --accent-soft: #EAE7D1;
   --accent-contrast: #EAE7D1;
-  --focus: #6A99C8;
+  --focus: #3A6386;
+  --cover-accent: #3A6386;
   --danger: #614524;
   --youtube: #916C37;
   --youtube-soft: #EAE7D1;
@@ -84,8 +85,8 @@
   --surface-raised: #4C361D;
   --surface-soft: #4C361D;
   --text: #EAE7D1;
-  --text-muted: #BC9B61;
-  --text-faint: #BC9B61;
+  --text-muted: #C0A16B;
+  --text-faint: #C0A16B;
   --border: #614524;
   --border-strong: #916C37;
   --accent: #BC9B61;
@@ -93,6 +94,7 @@
   --accent-soft: #4C361D;
   --accent-contrast: #2B1F10;
   --focus: #6A99C8;
+  --cover-accent: #6A99C8;
   --danger: #BC9B61;
   --youtube: #916C37;
   --youtube-soft: #4C361D;
@@ -531,10 +533,9 @@ a {
 
 .doc-kicker {
   color: var(--accent);
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
+  font-size: 0.76rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
 }
 
 .doc-pill {
@@ -751,7 +752,7 @@ a {
 }
 
 .document-cover .doc-kicker {
-  color: #6A99C8;
+  color: var(--cover-accent);
   margin-bottom: 0.8rem;
 }
 
@@ -763,16 +764,6 @@ a {
 
 .document-cover .doc-lede {
   margin-top: 1rem;
-}
-
-.document-cover__note {
-  margin: 3rem 0 0;
-  color: var(--text-faint);
-  font-family: var(--font-ui);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
 }
 
 .doc-content > section:not(.document-cover) {
@@ -1630,6 +1621,13 @@ a {
 }
 
 @media (min-width: 900px) and (orientation: landscape) {
+  .toc-item__label {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
   .workspace {
     display: grid;
     grid-template-columns: 250px minmax(0, 1fr) minmax(0, 0fr);
