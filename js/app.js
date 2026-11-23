@@ -1,5 +1,5 @@
 /**
- * WebMili · Lector del TFG
+ * Lector del TFG
  * Coordina el documento fijo, las preferencias de lectura y el panel de medios.
  */
 
@@ -142,7 +142,7 @@ function setView({ focus = true } = {}) {
 
   const firstHeading = state.headings[0];
   skipLink.setAttribute('href', `#${firstHeading ? firstHeading.id : 'doc-pane'}`);
-  document.title = `${DOCUMENT_NAME} · WebMili`;
+  document.title = `${DOCUMENT_NAME}`;
 
   if (!focus) {
     return;
@@ -1058,7 +1058,7 @@ function openMedia(media, trigger) {
   }
 
   if (!isAllowedEmbed(media.embedUrl, media.provider)) {
-    console.error('WebMili: se rechazó una URL de embed no permitida.', media.embedUrl);
+    console.error('Se rechazó una URL de embed no permitida.', media.embedUrl);
     announce('No se pudo abrir el reproductor.');
     return;
   }
