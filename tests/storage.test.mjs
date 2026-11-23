@@ -31,7 +31,10 @@ test('font size normalization stays inside 16–24 px', () => {
 
 test('readPrefs enables remember by default', () => {
   window.localStorage.values.clear();
-  assert.equal(readPrefs().remember, true);
+  const prefs = readPrefs();
+
+  assert.equal(prefs.remember, true);
+  assert.equal(prefs.theme, 'dark');
 });
 
 test('remember preference persists alongside theme and font', () => {

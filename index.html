@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es" class="no-transitions" data-theme="light">
+<html lang="es" class="no-transitions" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#fbf8f1">
+  <meta name="theme-color" content="#2B1F10">
   <meta name="description" content="Lector TFG: una experiencia de lectura para un documento con portada, introducción, cuatro capítulos y conclusión.">
   <title>Lector TFG · WebMili</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -39,7 +39,7 @@
           <button id="font-increase" class="icon-button icon-button--text" type="button" aria-label="Aumentar el tamaño del texto" title="Texto más grande">A+</button>
         </div>
 
-        <button id="toc-button" class="icon-button icon-button--wide" type="button" aria-label="Abrir índice de contenidos" title="Índice" hidden>
+        <button id="toc-button" class="icon-button icon-button--wide" type="button" aria-label="Abrir índice de contenidos" aria-controls="toc-sidebar" aria-expanded="false" title="Índice" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>
           </svg>
@@ -68,12 +68,24 @@
     </header>
 
     <main class="workspace" id="workspace">
+      <aside class="toc-sidebar" id="toc-sidebar" aria-labelledby="toc-title" aria-hidden="true" inert>
+        <header class="toc-sidebar__header">
+          <div>
+            <p class="navigation-dialog__kicker">Documento</p>
+            <h2 id="toc-title">Índice</h2>
+          </div>
+          <button class="toc-sidebar__close" id="toc-close" type="button" aria-label="Cerrar índice">Cerrar</button>
+        </header>
+        <nav class="toc-list" id="toc-list" aria-label="Índice de contenidos"></nav>
+      </aside>
+      <button class="toc-backdrop" id="toc-backdrop" type="button" aria-label="Cerrar índice" hidden></button>
+
       <div class="doc-pane" id="doc-pane" tabindex="-1" aria-label="Documento">
         <article class="doc-sheet" id="doc-sheet">
           <div class="doc-content" id="doc-content">
             <section class="document-cover" aria-labelledby="document-title">
               <p class="doc-kicker">Trabajo de fin de grado</p>
-              <h1 id="document-title">Lector TFG</h1>
+              <h1 id="document-title">El cuándo de mi por qué</h1>
               <p class="doc-lede">Título y datos de autoría pendientes de completar.</p>
               <p class="document-cover__note">Portada</p>
             </section>
@@ -152,17 +164,6 @@
   <div class="toast-region" id="toasts" role="region" aria-label="Avisos"></div>
 
   <div class="sr-only" id="sr-status" role="status" aria-live="polite" aria-atomic="true"></div>
-
-  <dialog class="navigation-dialog" id="toc-dialog" aria-labelledby="toc-title">
-    <div class="navigation-dialog__header">
-      <div>
-        <p class="navigation-dialog__kicker">Contenido</p>
-        <h2 id="toc-title">Índice</h2>
-      </div>
-      <button class="dialog-close" type="button" data-close-dialog="toc-dialog" aria-label="Cerrar índice">Cerrar</button>
-    </div>
-    <nav class="toc-list" id="toc-list" aria-label="Índice de contenidos"></nav>
-  </dialog>
 
   <dialog class="navigation-dialog" id="media-dialog" aria-labelledby="media-dialog-title">
     <div class="navigation-dialog__header">

@@ -1,15 +1,9 @@
 /**
- * WebMili · Lector local de .docx
- * Coordina la carga del archivo, el render, las preferencias y el panel de medios.
+ * WebMili · Lector del TFG
+ * Coordina el documento fijo, las preferencias de lectura y el panel de medios.
  */
 
-import {
-  convertDocx,
-  DOCX_MIME,
-  hasVisibleContent,
-  prepareDocument,
-  validateDocxFile
-} from './docx.js';
+import { prepareDocument } from './docx.js';
 
 import {
   FONT_MAX,
@@ -20,23 +14,9 @@ import {
   writePrefs
 } from './storage.js';
 
-import {
-  deleteLastDocument,
-  readLastDocument,
-  saveLastDocument
-} from './persistence.js';
-
-const landing = document.getElementById('landing');
-const landingError = document.getElementById('landing-error');
-const landingErrorText = document.getElementById('landing-error-text');
-const dropzone = document.getElementById('dropzone');
-const fileInput = document.getElementById('file-input');
-const openFileButton = document.getElementById('open-file');
-const emptyChoose = document.getElementById('empty-choose');
 const docPane = document.getElementById('doc-pane');
 const docSheet = document.getElementById('doc-sheet');
 const docContent = document.getElementById('doc-content');
-const docEmpty = document.getElementById('doc-empty');
 const docInfo = document.getElementById('doc-info');
 const docName = document.getElementById('doc-name');
 const docMeta = document.getElementById('doc-meta');
@@ -44,16 +24,15 @@ const fontControls = document.getElementById('font-controls');
 const fontDecrease = document.getElementById('font-decrease');
 const fontIncrease = document.getElementById('font-increase');
 const tocButton = document.getElementById('toc-button');
+const tocSidebar = document.getElementById('toc-sidebar');
+const tocClose = document.getElementById('toc-close');
+const tocBackdrop = document.getElementById('toc-backdrop');
 const mediaButton = document.getElementById('media-button');
 const mediaCount = document.getElementById('media-count');
-const tocDialog = document.getElementById('toc-dialog');
 const mediaDialog = document.getElementById('media-dialog');
 const tocList = document.getElementById('toc-list');
 const mediaList = document.getElementById('media-list');
 const skipLink = document.getElementById('skip-link');
-const loadingOverlay = document.getElementById('loading-overlay');
-const loadingDetail = document.getElementById('loading-detail');
-const dropOverlay = document.getElementById('drop-overlay');
 const toastRegion = document.getElementById('toasts');
 const themeToggle = document.getElementById('theme-toggle');
 const themeColorMeta = document.querySelector('meta[name="theme-color"]');
@@ -69,20 +48,15 @@ const mediaLabel = document.getElementById('media-label');
 const mediaExternal = document.getElementById('media-external');
 const mediaClose = document.getElementById('media-close');
 const mediaNote = document.getElementById('media-note');
-const settingsButton = document.getElementById('settings-button');
-const settingsDialog = document.getElementById('settings-dialog');
-const rememberToggle = document.getElementById('remember-toggle');
-const forgetButton = document.getElementById('forget-document');
 
 const desktopQuery = window.matchMedia('(min-width: 900px)');
 const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-const TITLE_LANDING = 'WebMili · Lector local de .docx';
+const DOCUMENT_NAME = 'Lector TFG';
 
 const state = {
-  view: 'landing',
-  loading: false,
+  view: 'reader',
   doc: null,
   headings: [],
   media: [],
@@ -124,9 +98,6 @@ let resizeTimer = 0;
 let resizeFrame = 0;
 let announceTimer = 0;
 let anchorFrame = 0;
-let dragDepth = 0;
-let scrollSaveTimer = 0;
-let restoringDocument = false;
 
 /* ---------- Utilidades ---------- */
 
@@ -156,193 +127,81 @@ function showToast(message, tone = 'info', duration = 6500) {
   }, duration);
 }
 
-function formatBytes(bytes) {
-  if (!Number.isFinite(bytes) || bytes < 0) {
-    return '';
-  }
-
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-
-  const kb = bytes / 1024;
-
-  if (kb < 1024) {
-    return `${new Intl.NumberFormat('es', { maximumFractionDigits: 1 }).format(kb)} KB`;
-  }
-
-  return `${new Intl.NumberFormat('es', { maximumFractionDigits: 1 }).format(kb / 1024)} MB`;
-}
-
-function nextPaint() {
-  return new Promise((resolve) => {
-    window.requestAnimationFrame(() => {
-      window.setTimeout(resolve, 0);
-    });
-  });
-}
-
 /* ---------- Vistas ---------- */
 
-function clearLandingError() {
-  landingError.hidden = true;
-  landingErrorText.textContent = '';
-}
+function setView({ focus = true } = {}) {
+  state.view = 'reader';
+  docPane.hidden = false;
+  docInfo.hidden = false;
+  fontControls.hidden = false;
+  updateTocLayout();
 
-function showLandingError(message) {
-  landingErrorText.textContent = message;
-  landingError.hidden = false;
-  landingError.scrollIntoView({ block: 'nearest' });
-}
-
-function setView(view, { focus = true } = {}) {
-  const reader = view === 'reader';
-
-  state.view = view;
-  landing.hidden = reader;
-  docPane.hidden = !reader;
-  docInfo.hidden = !reader;
-  fontControls.hidden = !reader;
-  tocButton.hidden = !reader;
-  mediaButton.hidden = !reader;
-  openFileButton.hidden = !reader;
-
-  // El enlace «saltar» apunta al primer encabezado cuando existe, para que el
-  // foco visible quede sobre el título y no sobre toda la superficie de lectura.
-  const firstHeading = reader ? state.headings[0] : null;
-  skipLink.setAttribute('href', reader ? `#${firstHeading ? firstHeading.id : 'doc-pane'}` : '#landing');
-  document.title = reader && state.doc ? `${state.doc.name} · WebMili` : TITLE_LANDING;
+  const firstHeading = state.headings[0];
+  skipLink.setAttribute('href', `#${firstHeading ? firstHeading.id : 'doc-pane'}`);
+  document.title = `${DOCUMENT_NAME} · WebMili`;
 
   if (!focus) {
     return;
   }
 
-  if (reader) {
+  docPane.focus({ preventScroll: true });
+}
+
+function updateTocLayout() {
+  const isDesktop = desktopQuery.matches;
+  const wasOpen = tocSidebar.classList.contains('is-open');
+
+  tocSidebar.classList.remove('is-open');
+  tocSidebar.inert = !isDesktop;
+  tocSidebar.setAttribute('aria-hidden', String(!isDesktop));
+  tocBackdrop.hidden = true;
+  tocButton.hidden = isDesktop;
+  tocButton.setAttribute('aria-expanded', 'false');
+  tocButton.setAttribute('aria-label', 'Abrir índice de contenidos');
+
+  if (wasOpen && isDesktop) {
     docPane.focus({ preventScroll: true });
-  } else {
-    landing.focus({ preventScroll: true });
   }
 }
 
-function updateDocInfo(doc) {
-  docName.textContent = doc.name;
-  docName.title = doc.name;
-  docMeta.textContent = doc.size > 0
-    ? `${formatBytes(doc.size)} · Procesado en este dispositivo`
-    : 'Procesado en este dispositivo';
+function setTocOpen(open, { restoreFocus = false } = {}) {
+  if (desktopQuery.matches) {
+    return;
+  }
+
+  tocSidebar.classList.toggle('is-open', open);
+  tocSidebar.inert = !open;
+  tocSidebar.setAttribute('aria-hidden', String(!open));
+  tocBackdrop.hidden = !open;
+  tocButton.setAttribute('aria-expanded', String(open));
+  tocButton.setAttribute(
+    'aria-label',
+    open ? 'Cerrar índice de contenidos' : 'Abrir índice de contenidos'
+  );
+
+  if (open) {
+    tocClose.focus({ preventScroll: true });
+  } else if (restoreFocus) {
+    tocButton.focus({ preventScroll: true });
+  }
 }
 
-function showReader(doc, headings, { restoreScroll = 0 } = {}) {
+function updateDocInfo() {
+  docName.textContent = DOCUMENT_NAME;
+  docName.title = DOCUMENT_NAME;
+  docMeta.textContent = 'Portada · Introducción · 4 capítulos · Conclusión';
+}
+
+function showReader(doc, headings, { focus = true } = {}) {
   state.doc = doc;
   state.headings = headings;
   enhanceMediaLinks();
   updateNavigation();
 
-  docContent.hidden = false;
-  docEmpty.hidden = true;
-  docSheet.classList.remove('has-empty');
-  updateDocInfo(doc);
-  setView('reader', { focus: false });
-  docPane.scrollTop = 0;
-  docPane.focus({ preventScroll: true });
-
-  if (restoreScroll > 0) {
-    restoringDocument = true;
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        const images = Array.from(docContent.querySelectorAll('img'));
-        Promise.all(images.map((image) => image.decode ? image.decode().catch(() => {}) : Promise.resolve()))
-          .finally(() => {
-            docPane.scrollTop = restoreScroll;
-            window.requestAnimationFrame(() => {
-              restoringDocument = false;
-            });
-          });
-      });
-    });
-  }
+  updateDocInfo();
+  setView({ focus });
 
   announce(`Documento abierto: ${doc.name}.`);
-}
-
-function showEmptyDocument(doc) {
-  state.doc = doc;
-  state.headings = [];
-  state.media = [];
-  updateNavigation();
-
-  docContent.innerHTML = '';
-  docContent.hidden = true;
-  docSheet.classList.add('has-empty');
-  docEmpty.hidden = false;
-  updateDocInfo(doc);
-  setView('reader', { focus: false });
-  docPane.scrollTop = 0;
-  emptyChoose.focus({ preventScroll: true });
-  announce('El documento no tiene contenido visible. Puedes elegir otro archivo.');
-}
-
-/* ---------- Persistencia local ---------- */
-
-async function persistCurrentDocument(scrollTop = docPane.scrollTop) {
-  if (!state.doc || !(state.doc instanceof Blob) || !state.prefs.remember) {
-    return;
-  }
-
-  try {
-    await saveLastDocument({
-      blob: state.doc,
-      name: state.doc.name,
-      size: state.doc.size,
-      scrollTop: Math.max(0, Math.round(scrollTop)),
-      savedAt: Date.now()
-    });
-  } catch (error) {
-    state.prefs = writePrefs({ ...state.prefs, remember: false });
-    if (rememberToggle) {
-      rememberToggle.checked = false;
-    }
-    showToast(
-      'No se pudo guardar el documento en este dispositivo. La lectura seguirá funcionando, pero no podrá restaurarse.',
-      'warning',
-      9000
-    );
-  }
-}
-
-function scheduleScrollSave() {
-  if (restoringDocument || !state.prefs.remember || state.view !== 'reader') {
-    return;
-  }
-
-  window.clearTimeout(scrollSaveTimer);
-  scrollSaveTimer = window.setTimeout(() => {
-    persistCurrentDocument(docPane.scrollTop);
-  }, 300);
-}
-
-async function restoreLastDocument() {
-  if (!state.prefs.remember) {
-    return;
-  }
-
-  try {
-    const record = await readLastDocument();
-
-    if (!record || !(record.blob instanceof Blob)) {
-      return;
-    }
-
-    const file = new File([record.blob], record.name || 'Documento recuperado.docx', {
-      type: DOCX_MIME,
-      lastModified: record.savedAt || Date.now()
-    });
-
-    await handleFile(file, { restoring: true, restoreScroll: Number(record.scrollTop) || 0 });
-  } catch (error) {
-    await deleteLastDocument().catch(() => {});
-    showLandingError('No pudimos restaurar el documento guardado. Puede haberse eliminado o estar dañado.');
-  }
 }
 
 /* ---------- Índice y lista de medios ---------- */
@@ -383,15 +242,11 @@ function renderToc() {
     item.dataset.level = String(heading.level);
     item.dataset.headingId = heading.id;
 
-    const level = document.createElement('span');
-    level.className = 'toc-item__level';
-    level.textContent = `H${heading.level}`;
-
     const label = document.createElement('span');
     label.className = 'toc-item__label';
     label.textContent = heading.text || 'Sección sin título';
 
-    item.append(level, label);
+    item.append(label);
     tocList.append(item);
   }
 }
@@ -441,6 +296,7 @@ function updateNavigation() {
 
   mediaCount.textContent = String(state.media.length);
   mediaCount.hidden = state.media.length === 0;
+  mediaButton.hidden = state.media.length === 0;
   mediaButton.setAttribute(
     'aria-label',
     `Abrir lista de medios. ${state.media.length} ${state.media.length === 1 ? 'enlace único' : 'enlaces únicos'}`
@@ -459,22 +315,25 @@ function closeNavigationDialog(dialog) {
   }
 }
 
-tocButton.addEventListener('click', () => openNavigationDialog(tocDialog));
+tocButton.addEventListener('click', () => {
+  setTocOpen(!tocSidebar.classList.contains('is-open'));
+});
+tocClose.addEventListener('click', () => setTocOpen(false, { restoreFocus: true }));
+tocBackdrop.addEventListener('click', () => setTocOpen(false, { restoreFocus: true }));
 mediaButton.addEventListener('click', () => openNavigationDialog(mediaDialog));
+desktopQuery.addEventListener('change', updateTocLayout);
 
 document.querySelectorAll('[data-close-dialog]').forEach((button) => {
   button.addEventListener('click', () => {
-    const dialog =
-      button.dataset.closeDialog === 'toc-dialog'
-        ? tocDialog
-        : button.dataset.closeDialog === 'media-dialog'
-          ? mediaDialog
-          : settingsDialog;
-    closeNavigationDialog(dialog);
+    const dialog = document.getElementById(button.dataset.closeDialog);
+
+    if (dialog instanceof HTMLDialogElement) {
+      closeNavigationDialog(dialog);
+    }
   });
 });
 
-[tocDialog, mediaDialog, settingsDialog].forEach((dialog) => {
+[mediaDialog].forEach((dialog) => {
   dialog.addEventListener('click', (event) => {
     if (event.target === dialog) {
       closeNavigationDialog(dialog);
@@ -495,7 +354,7 @@ tocList.addEventListener('click', (event) => {
     return;
   }
 
-  closeNavigationDialog(tocDialog);
+  setTocOpen(false);
   target.scrollIntoView({
     behavior: motionQuery.matches ? 'auto' : 'smooth',
     block: 'start'
@@ -520,195 +379,6 @@ mediaList.addEventListener('click', (event) => {
   closeNavigationDialog(mediaDialog);
   openMedia(media, media.trigger);
 });
-
-/* ---------- Carga de archivos ---------- */
-
-function showLoading(file) {
-  loadingDetail.textContent = `${file.name} · ${formatBytes(file.size)}`;
-  loadingOverlay.hidden = false;
-}
-
-function hideLoading() {
-  loadingOverlay.hidden = true;
-  loadingDetail.textContent = '';
-}
-
-function chooseFile() {
-  fileInput.value = '';
-  fileInput.click();
-}
-
-function handleFiles(fileList) {
-  const files = Array.from(fileList || []);
-
-  if (!files.length) {
-    return;
-  }
-
-  if (state.loading) {
-    showToast('Espera a que termine la conversión actual antes de abrir otro archivo.', 'warning');
-    announce('Todavía se está procesando un documento.');
-    return;
-  }
-
-  if (files.length > 1) {
-    showToast(`Se recibieron ${files.length} archivos. Se usó ${files[0].name}.`, 'info', 7500);
-  }
-
-  handleFile(files[0]);
-}
-
-async function handleFile(file, { restoring = false, restoreScroll = 0 } = {}) {
-  if (state.loading) {
-    return;
-  }
-
-  const validation = validateDocxFile(file);
-
-  if (!validation.ok) {
-    if (state.view === 'reader') {
-      showToast(validation.message, 'error', 8500);
-    } else {
-      showLandingError(validation.message);
-    }
-
-    announce(validation.message);
-    return;
-  }
-
-  clearLandingError();
-
-  if (isOpen) {
-    closeMedia();
-  }
-
-  state.loading = true;
-  showLoading(file);
-
-  if (validation.large) {
-    showToast(
-      `El archivo pesa ${formatBytes(file.size)}. La conversión puede tardar unos segundos.`,
-      'warning',
-      8500
-    );
-  }
-
-  try {
-    await nextPaint();
-
-    const { html, messages } = await convertDocx(file);
-
-    if (messages.length) {
-      console.info('[WebMili] Advertencias de Mammoth:', messages);
-    }
-
-    if (!html.trim()) {
-      showEmptyDocument(file);
-      return;
-    }
-
-    docContent.innerHTML = html;
-
-    const { headings } = prepareDocument(docContent);
-
-    if (!hasVisibleContent(docContent)) {
-      showEmptyDocument(file);
-      return;
-    }
-
-    showReader(file, headings, { restoreScroll });
-
-    if (!restoring && state.prefs.remember) {
-      await persistCurrentDocument(restoreScroll);
-    }
-  } catch (error) {
-    console.error('[WebMili] No se pudo convertir el documento:', error);
-
-    const message =
-      'No pudimos leer el documento. Puede estar dañado, protegido con contraseña o no ser un .docx válido.';
-
-    if (state.view === 'reader' && state.doc) {
-      showToast(message, 'error', 9000);
-    } else {
-      showLandingError(message);
-    }
-
-    announce(message);
-  } finally {
-    hideLoading();
-    state.loading = false;
-  }
-}
-
-/* ---------- Drag & drop ---------- */
-
-function eventHasFiles(event) {
-  return Array.from(event.dataTransfer?.types || []).includes('Files');
-}
-
-function showDropOverlay() {
-  dropOverlay.hidden = false;
-  dropzone.classList.add('is-over');
-}
-
-function hideDropOverlay() {
-  dragDepth = 0;
-  dropOverlay.hidden = true;
-  dropzone.classList.remove('is-over');
-}
-
-window.addEventListener('dragenter', (event) => {
-  if (!eventHasFiles(event)) {
-    return;
-  }
-
-  event.preventDefault();
-  dragDepth += 1;
-
-  if (!state.loading) {
-    showDropOverlay();
-  }
-});
-
-window.addEventListener('dragover', (event) => {
-  if (!eventHasFiles(event)) {
-    return;
-  }
-
-  event.preventDefault();
-  event.dataTransfer.dropEffect = state.loading ? 'none' : 'copy';
-});
-
-window.addEventListener('dragleave', (event) => {
-  if (!eventHasFiles(event)) {
-    return;
-  }
-
-  dragDepth = Math.max(0, dragDepth - 1);
-
-  if (dragDepth === 0) {
-    hideDropOverlay();
-  }
-});
-
-window.addEventListener('drop', (event) => {
-  if (!eventHasFiles(event)) {
-    return;
-  }
-
-  event.preventDefault();
-  hideDropOverlay();
-
-  if (state.loading) {
-    showToast('Espera a que termine la conversión actual antes de abrir otro archivo.', 'warning');
-    return;
-  }
-
-  handleFiles(event.dataTransfer.files);
-});
-
-window.addEventListener('dragend', hideDropOverlay);
-window.addEventListener('blur', hideDropOverlay);
 
 /* ---------- Enlaces internos del documento ---------- */
 
@@ -788,7 +458,7 @@ function syncThemeButton() {
   themeToggle.title = nextLabel;
 
   if (themeColorMeta) {
-    themeColorMeta.setAttribute('content', isDark ? '#181d1a' : '#fbf8f1');
+    themeColorMeta.setAttribute('content', isDark ? '#2B1F10' : '#F3EFDD');
   }
 }
 
@@ -1275,7 +945,17 @@ document.addEventListener('click', (event) => {
 });
 
 document.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape' || event.defaultPrevented || !isOpen) {
+  if (event.key !== 'Escape' || event.defaultPrevented) {
+    return;
+  }
+
+  if (!desktopQuery.matches && tocSidebar.classList.contains('is-open')) {
+    event.preventDefault();
+    setTocOpen(false, { restoreFocus: true });
+    return;
+  }
+
+  if (!isOpen) {
     return;
   }
 
@@ -1332,80 +1012,6 @@ window.addEventListener('offline', updateConnectionNote);
 
 /* ---------- Eventos de la interfaz ---------- */
 
-rememberToggle.checked = state.prefs.remember;
-
-settingsButton.addEventListener('click', () => {
-  rememberToggle.checked = state.prefs.remember;
-  openNavigationDialog(settingsDialog);
-});
-
-rememberToggle.addEventListener('change', async () => {
-  state.prefs = writePrefs({ ...state.prefs, remember: rememberToggle.checked });
-
-  if (!rememberToggle.checked) {
-    try {
-      await deleteLastDocument();
-      showToast('El documento guardado se olvidó.', 'info');
-      announce('Recordar en este dispositivo desactivado.');
-    } catch (error) {
-      showToast('No se pudo borrar el documento guardado.', 'error');
-    }
-  } else {
-    await persistCurrentDocument(docPane.scrollTop);
-    announce('Recordar en este dispositivo activado.');
-  }
-});
-
-forgetButton.addEventListener('click', async () => {
-  try {
-    await deleteLastDocument();
-  } catch (error) {
-    showToast('No se pudo borrar el documento guardado.', 'error');
-  }
-
-  if (isOpen) {
-    closeMedia();
-  }
-
-  state.doc = null;
-  state.headings = [];
-  state.media = [];
-  docContent.innerHTML = '';
-  docPane.scrollTop = 0;
-  closeNavigationDialog(settingsDialog);
-  clearLandingError();
-  setView('landing');
-  showToast('Documento olvidado.', 'info');
-  announce('Documento olvidado. Has vuelto a la pantalla inicial.');
-});
-
-docPane.addEventListener('scroll', scheduleScrollSave, { passive: true });
-
-window.addEventListener('beforeunload', () => {
-  if (state.prefs.remember && state.view === 'reader' && state.doc) {
-    persistCurrentDocument(docPane.scrollTop);
-  }
-});
-
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden' && state.prefs.remember && state.view === 'reader') {
-    persistCurrentDocument(docPane.scrollTop);
-  }
-});
-
-dropzone.addEventListener('click', chooseFile);
-openFileButton.addEventListener('click', chooseFile);
-emptyChoose.addEventListener('click', chooseFile);
-
-fileInput.addEventListener('change', () => {
-  const files = Array.from(fileInput.files || []);
-  fileInput.value = '';
-
-  if (files.length) {
-    handleFiles(files);
-  }
-});
-
 themeToggle.addEventListener('click', toggleTheme);
 fontDecrease.addEventListener('click', () => changeFontSize(-FONT_STEP));
 fontIncrease.addEventListener('click', () => changeFontSize(FONT_STEP));
@@ -1414,9 +1020,7 @@ fontIncrease.addEventListener('click', () => changeFontSize(FONT_STEP));
 
 applyFontSize(state.prefs.fontSize);
 syncThemeButton();
-setView('landing', { focus: false });
-enhanceMediaLinks();
-restoreLastDocument();
+showReader({ name: DOCUMENT_NAME }, prepareDocument(docContent).headings, { focus: false });
 
 window.requestAnimationFrame(() => {
   window.requestAnimationFrame(() => {

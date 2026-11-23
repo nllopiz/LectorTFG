@@ -1,38 +1,26 @@
-# WebMili
+# WebMili · Lector TFG
 
-Lector local de documentos `.docx` con reproductor integrado de YouTube y Spotify. Aplicación web estática, sin backend, sin cuentas y sin subida de archivos.
-
-> **Estado actual: Hitos 0–4 implementados.**
-> La app abre un `.docx`, genera el índice de encabezados, reconoce enlaces de YouTube y Spotify, reproduce medios en el panel integrado y puede recordar el último documento con su posición.
+Lector web para un documento fijo: un trabajo de fin de grado con portada, introducción, cuatro capítulos y conclusión. El contenido provisional aparece directamente al abrir la página; ya no se cargan documentos desde el dispositivo.
 
 ---
 
 ## Qué puedes probar ahora
 
-- Elegir un `.docx` con el selector o arrastrarlo y soltarlo sobre la ventana.
-- Validación de formato: rechaza `.doc`, PDF, archivos vacíos y otros formatos con un mensaje claro.
-- Aviso no bloqueante para archivos de más de 20 MB; si se sueltan varios, se abre el primero y se informa.
-- Conversión local con Mammoth.js y saneado con DOMPurify antes de insertar el HTML.
-- Títulos, párrafos, listas, tablas, imágenes, énfasis y enlaces.
-- Tablas con desplazamiento horizontal accesible por teclado e imágenes con carga diferida.
-- Enlaces externos en pestaña nueva; enlaces internos con desplazamiento al encabezado.
-- Enlaces con `javascript:`, `data:` u otros protocolos no permitidos se neutralizan y avisan al pulsarlos; las anclas rotas se marcan.
-- Estados de carga, documento vacío y error comprensible.
-- Tema claro/oscuro y tamaño de letra de 16 a 24 px, persistidos en `localStorage`.
-- Recordar el último `.docx` y su posición de lectura mediante IndexedDB.
-- Ajustes locales para desactivar el guardado o olvidar el documento.
-- Respeto por `prefers-reduced-motion`.
+- Portada y las seis secciones del documento visibles desde el inicio.
+- Índice generado a partir de los encabezados y visible en un sidebar izquierdo en escritorio; en móvil se abre como panel lateral.
+- Paleta marrón y dorada en tema oscuro por defecto, con tema claro alternativo y tamaño de letra de 16 a 24 px; las preferencias se guardan en `localStorage`.
+- Estilos responsive para lectura y soporte de `prefers-reduced-motion`.
+- Panel multimedia integrado, preparado para enlaces de YouTube y Spotify que se incorporen al documento.
 - Navegación por teclado, enlace «saltar al documento» y anuncios `aria-live`.
 
 ## Qué no incluye todavía
 
-- Persistencia de varios documentos: solo se recuerda el último.
-- Sincronización entre dispositivos.
+- El texto definitivo, los datos de autoría y los títulos reales de los capítulos.
 - Anotaciones, búsqueda interna, edición o cola de reproducción.
 - Modo PWA/offline completo.
 - Prueba manual en móvil real, Safari/Firefox y lector de pantalla.
 
-Los documentos de ejemplo son ficticios y viven en `tests/fixtures/`. El orden de trabajo está en [`ROADMAP.md`](ROADMAP.md).
+Los `.docx` ficticios de `tests/fixtures/` se conservan para las pruebas de los módulos de conversión; la interfaz ya no los abre.
 
 ---
 
@@ -54,23 +42,15 @@ npx serve .
 
 Después abre <http://localhost:8080>.
 
-Para probar el lector, arrastra uno de los documentos ficticios de `tests/fixtures/`:
-
-- `lectura-basica.docx`: títulos, listas, tabla, imagen, enlaces internos y externos.
-- `enlaces-peligrosos.docx`: protocolos peligrosos, ancla rota y enlaces permitidos.
-- `documento-vacio.docx`: estado sin contenido visible.
-- `medios.docx`: enlaces de YouTube, playlist y Spotify para probar el reproductor.
-
-Se regeneran con `python tests/fixtures/make_fixtures.py`. No contienen datos personales.
+La página abre directamente el documento provisional. Para reemplazar el contenido de ejemplo, edita las secciones de `index.html`. Los fixtures de conversión se regeneran con `python tests/fixtures/make_fixtures.py`; no contienen datos personales.
 
 ### Probar el comportamiento responsive
 
-1. Abre la página a 1440 px de ancho y carga `tests/fixtures/lectura-basica.docx`.
-2. Comprueba la tabla y la imagen; la tabla se desplaza en horizontal si no cabe.
-3. Reduce la ventana hasta 320 px: no debe aparecer scroll horizontal y el texto debe seguir siendo legible.
-4. Prueba el tema oscuro y el tamaño de letra; recarga y comprueba que se recuerdan.
-5. Activa la emulación de `prefers-reduced-motion` y repite la apertura y los saltos internos: no debe haber animación.
-6. Recorre la interfaz con `Tab`, activa el enlace «saltar» y los enlaces internos con `Enter`.
+1. Abre la página a 1440 px de ancho y comprueba la portada y el índice.
+2. Reduce la ventana hasta 320 px: no debe aparecer scroll horizontal y el texto debe seguir siendo legible.
+3. Prueba el tema oscuro y el tamaño de letra; recarga y comprueba que se recuerdan.
+4. Activa la emulación de `prefers-reduced-motion` y prueba los saltos del índice.
+5. Recorre la interfaz con `Tab` y activa el enlace «saltar» y los elementos del índice con `Enter`.
 
 > El documento se procesa dentro de la pestaña. La prueba automatizada verifica que no hay peticiones POST ni cuerpos de subida.
 
@@ -111,7 +91,8 @@ WebMili/
 │  ├─ storage.js       # Preferencias de tema y tamaño
 │  └─ theme-init.js    # Tema inicial antes del primer pintado
 ├─ assets/
-│  └─ favicon.svg
+│  ├─ favicon.svg
+│  └─ fonts/             # Chocolate Classical Sans e IM Fell Great Primer (WOFF2 + OFL)
 ├─ vendor/             # Mammoth 1.9.1 y DOMPurify 3.2.6 con licencias
 ├─ tests/
 │  └─ fixtures/        # .docx ficticios y generador reproducible
@@ -123,7 +104,7 @@ WebMili/
 └─ RISKS.md            # Riesgos y limitaciones
 ```
 
-No hay dependencias externas en tiempo de ejecución: todo se sirve desde el repositorio. `index.html` carga Mammoth y DOMPurify desde `vendor/`; no se usan CDNs ni fuentes externas.
+Todo se sirve desde el repositorio: las fuentes se cargan localmente desde `assets/fonts/` y no se usan CDNs. Mammoth y DOMPurify permanecen en `vendor/` para las pruebas de conversión; la página del lector no necesita cargarlos.
 
 ---
 
@@ -177,4 +158,4 @@ Los detalles completos están en [`MEMORY.md`](MEMORY.md), [`DECISIONS.md`](DECI
 ## Créditos
 
 - **Mammoth.js 1.9.1** (BSD) y **DOMPurify 3.2.6** (Apache 2.0 / MPL 2.0) están vendorizados con sus licencias en `vendor/`.
-- Tipografías del sistema; no se carga ninguna fuente externa.
+- **Chocolate Classical Sans** (Chocolate Classical Sans Project Authors) e **IM Fell Great Primer** (Igino Marini) se distribuyen en WOFF2 con licencias SIL Open Font License 1.1 en `assets/fonts/`.

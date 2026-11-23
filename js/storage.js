@@ -41,7 +41,7 @@ export function readPrefs() {
   const raw = readRawPrefs();
 
   return {
-    theme: THEMES.has(raw.theme) ? raw.theme : 'system',
+    theme: THEMES.has(raw.theme) ? raw.theme : 'dark',
     fontSize: normalizeFontSize(raw.fontSize),
     remember: typeof raw.remember === 'boolean' ? raw.remember : true
   };
