@@ -580,17 +580,17 @@ a {
 
 .doc-sheet h3 {
   margin-top: 1.6em;
-  font-size: 1.4em;
+  font-size: 1.6em;
   letter-spacing: -0.01em;
   text-align: center;
 }
 
 .doc-sheet h4 {
-  font-size: 1.2em;
+  font-size: 1.4em;
 }
 
 .doc-sheet h5 {
-  font-size: 1em;
+  font-size: 1.2em;
 }
 
 .doc-sheet p {
@@ -810,6 +810,8 @@ a {
 .document-cover .doc-kicker {
   color: var(--cover-accent);
   margin-bottom: 0.8rem;
+  text-indent: 0;
+  font-size: 0.9em;
 }
 
 .document-cover h1 {
@@ -823,6 +825,9 @@ a {
   margin-top: 1rem;
   font-family: var(--font-heading);
   margin-bottom: 0;
+  text-indent: 0;
+  font-size: 1.4em;
+  font-weight: 500;
 }
 
 .doc-content > section:not(.document-cover) {
