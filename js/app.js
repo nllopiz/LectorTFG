@@ -48,6 +48,10 @@ const mediaPanel = document.getElementById('media-panel');
 const mediaPanelInner = mediaPanel.querySelector('.media-panel__inner');
 const mediaBar = mediaPanel.querySelector('.media-panel__bar');
 const mediaStage = document.getElementById('media-stage');
+const mediaAnalysisTrigger = document.getElementById('media-analysis-trigger');
+const mediaAnalysisDialog = document.getElementById('media-analysis-dialog');
+const mediaAnalysisTitle = document.getElementById('media-analysis-title');
+const mediaAnalysisContent = mediaAnalysisDialog.querySelector('.media-analysis-dialog__content');
 const mediaProvider = document.getElementById('media-provider');
 const mediaLabel = document.getElementById('media-label');
 const mediaExternal = document.getElementById('media-external');
@@ -97,6 +101,7 @@ const TYPE_LABELS = {
 
 let activeMedia = null;
 let activeTrigger = null;
+let videoAnalyses = null;
 let currentIframe = null;
 let isOpen = false;
 let loadTimer = 0;
@@ -481,12 +486,108 @@ function closeNavigationDialog(dialog) {
   }
 }
 
+function isVideoAnalysesData(value) {
+  return value !== null &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    Object.values(value).every((analysis) =>
+      analysis !== null &&
+      typeof analysis === 'object' &&
+      Array.isArray(analysis.paragraphs) &&
+      analysis.paragraphs.length > 0 &&
+      analysis.paragraphs.every((paragraph) =>
+        typeof paragraph === 'string' && paragraph.trim().length > 0
+      )
+    );
+}
+
+function getVideoAnalysis(media) {
+  if (
+    !videoAnalyses ||
+    !media ||
+    media.provider !== 'youtube' ||
+    media.type !== 'video'
+  ) {
+    return null;
+  }
+
+  return Object.prototype.hasOwnProperty.call(videoAnalyses, media.id)
+    ? videoAnalyses[media.id]
+    : null;
+}
+
+function renderVideoAnalysis(analysis) {
+  const paragraphs = analysis.paragraphs.map((text) => {
+    const paragraph = document.createElement('p');
+    paragraph.textContent = text;
+    return paragraph;
+  });
+
+  mediaAnalysisContent.replaceChildren(...paragraphs);
+}
+
+function updateMediaAnalysisDialogPosition() {
+  if (desktopQuery.matches) {
+    mediaAnalysisDialog.style.removeProperty('--media-analysis-top');
+    return;
+  }
+
+  const mediaPanelBottom = mediaPanel.getBoundingClientRect().bottom;
+  mediaAnalysisDialog.style.setProperty(
+    '--media-analysis-top',
+    `${Math.ceil(mediaPanelBottom + 8)}px`
+  );
+}
+
+async function loadVideoAnalyses() {
+  try {
+    const response = await fetch(new URL('../video-analyses.json', import.meta.url));
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const analyses = await response.json();
+
+    if (!isVideoAnalysesData(analyses)) {
+      throw new TypeError('El archivo no tiene el formato esperado.');
+    }
+
+    videoAnalyses = analyses;
+    updateMediaAnalysisAvailability();
+
+    if (isOpen) {
+      updateMediaSize();
+    }
+  } catch (error) {
+    console.error('No se pudieron cargar los análisis de video.', error);
+    showToast('No se pudieron cargar los análisis de video.', 'error');
+  }
+}
+
+function updateMediaAnalysisAvailability() {
+  const canShowAnalysis = getVideoAnalysis(activeMedia) !== null;
+  mediaAnalysisTrigger.hidden = !canShowAnalysis;
+}
+
 tocButton.addEventListener('click', () => {
   setTocOpen(!tocSidebar.classList.contains('is-open'));
 });
 tocClose.addEventListener('click', () => setTocOpen(false, { restoreFocus: true }));
 tocBackdrop.addEventListener('click', () => setTocOpen(false, { restoreFocus: true }));
 mediaButton.addEventListener('click', () => openNavigationDialog(mediaDialog));
+mediaAnalysisTrigger.addEventListener('click', () => {
+  const analysis = getVideoAnalysis(activeMedia);
+
+  if (!analysis) {
+    return;
+  }
+
+  updateMediaAnalysisDialogPosition();
+  renderVideoAnalysis(analysis);
+  mediaAnalysisTitle.textContent = `Análisis del video: ${activeMedia.label}`;
+  openNavigationDialog(mediaAnalysisDialog);
+});
 desktopQuery.addEventListener('change', updateTocLayout);
 
 document.querySelectorAll('[data-close-dialog]').forEach((button) => {
@@ -499,7 +600,7 @@ document.querySelectorAll('[data-close-dialog]').forEach((button) => {
   });
 });
 
-[mediaDialog].forEach((dialog) => {
+[mediaDialog, mediaAnalysisDialog].forEach((dialog) => {
   dialog.addEventListener('click', (event) => {
     if (event.target === dialog) {
       closeNavigationDialog(dialog);
@@ -1082,20 +1183,29 @@ function updateMediaSize() {
   }
 
   const maxPanelHeight = Math.round(workspace.clientHeight * 0.55);
+  const analysisTriggerHeight = mediaAnalysisTrigger.hidden
+    ? 0
+    : mediaAnalysisTrigger.getBoundingClientRect().height +
+      Number.parseFloat(getComputedStyle(mediaAnalysisTrigger).marginTop) +
+      Number.parseFloat(getComputedStyle(mediaAnalysisTrigger).marginBottom);
   const availableForStage = Math.max(
     80,
-    maxPanelHeight - barHeight - fallbackHeight - noteHeight
+    maxPanelHeight - barHeight - fallbackHeight - noteHeight - analysisTriggerHeight
   );
 
   stageHeight = Math.min(stageHeight, availableForStage);
 
   const panelHeight = Math.min(
-    barHeight + stageHeight + fallbackHeight + noteHeight,
+    barHeight + stageHeight + fallbackHeight + noteHeight + analysisTriggerHeight,
     maxPanelHeight
   );
 
   mediaPanel.style.setProperty('--stage-h', `${Math.round(stageHeight)}px`);
   mediaPanel.style.setProperty('--media-h', `${Math.round(panelHeight)}px`);
+
+  if (mediaAnalysisDialog.open) {
+    updateMediaAnalysisDialogPosition();
+  }
 }
 
 function destroyIframe() {
@@ -1211,6 +1321,7 @@ function openMedia(media, trigger) {
   activeMedia = media;
   activeTrigger = trigger;
   isOpen = true;
+  updateMediaAnalysisAvailability();
 
   mediaProvider.dataset.provider = media.provider;
   mediaProvider.textContent = provider.name;
@@ -1273,6 +1384,9 @@ function closeMedia() {
   if (!isOpen) {
     return;
   }
+
+  closeNavigationDialog(mediaAnalysisDialog);
+  mediaAnalysisTrigger.hidden = true;
 
   const anchor = beginScrollAnchor();
   const focusTarget = activeTrigger;
@@ -1359,6 +1473,12 @@ document.addEventListener('keydown', (event) => {
     return;
   }
 
+  if (mediaAnalysisDialog.open) {
+    event.preventDefault();
+    closeNavigationDialog(mediaAnalysisDialog);
+    return;
+  }
+
   if (!tocTooltip.hidden) {
     event.preventDefault();
     hideTocTooltip();
@@ -1383,6 +1503,7 @@ mediaClose.addEventListener('click', closeMedia);
 
 function handleResize() {
   scheduleReadingPositionSave();
+  updateMediaAnalysisAvailability();
 
   if (!isCompactToc()) {
     hideTocTooltip();
@@ -1420,6 +1541,12 @@ workspace.addEventListener('transitionend', (event) => {
   }
 });
 
+mediaPanel.addEventListener('transitionend', (event) => {
+  if (event.propertyName === 'height' && mediaAnalysisDialog.open) {
+    updateMediaAnalysisDialogPosition();
+  }
+});
+
 function updateConnectionNote() {
   if (!isOpen) {
     return;
@@ -1449,6 +1576,7 @@ fontIncrease.addEventListener('click', () => changeFontSize(FONT_STEP));
 applyFontSize(state.prefs.fontSize);
 syncThemeButton();
 showReader(prepareDocument(docContent).headings, { focus: false });
+loadVideoAnalyses();
 docPane.addEventListener('scroll', scheduleReadingPositionSave, { passive: true });
 window.addEventListener('pagehide', flushReadingPosition);
 restoreReadingPosition();

@@ -3560,6 +3560,8 @@
               </svg>
             </a><span id="media-fallback-period" hidden>.</span>
           </p>
+          <button class="media-analysis-trigger" id="media-analysis-trigger" type="button" aria-haspopup="dialog"
+            aria-controls="media-analysis-dialog" hidden>Ver Análisis del Video</button>
           <p class="media-note" id="media-note" role="status" hidden></p>
 
           <div class="media-foot" aria-hidden="true">
@@ -3587,6 +3589,15 @@
         aria-label="Cerrar lista de medios">Cerrar</button>
     </div>
     <div class="media-list" id="media-list" aria-label="Lista de medios"></div>
+  </dialog>
+
+  <dialog class="media-analysis-dialog" id="media-analysis-dialog" aria-labelledby="media-analysis-title">
+    <div class="navigation-dialog__header">
+      <h2 id="media-analysis-title">Análisis del video</h2>
+      <button class="dialog-close" type="button" data-close-dialog="media-analysis-dialog"
+        aria-label="Cerrar análisis del video" autofocus>Cerrar</button>
+    </div>
+    <div class="media-analysis-dialog__content"></div>
   </dialog>
 
   <script type="module" src="js/app.js"></script>
