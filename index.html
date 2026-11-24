@@ -3542,14 +3542,6 @@
               </svg>
               <span>Cerrar</span>
             </button>
-            <a class="media-external" id="media-external" href="https://www.youtube.com/" target="_blank"
-              rel="noopener noreferrer">
-              <span>Abrir en YouTube</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
-                stroke-linejoin="round" aria-hidden="true">
-                <path d="M7 17 17 7M7 7h10v10" />
-              </svg>
-            </a>
           </header>
 
           <div class="media-stage" id="media-stage" aria-busy="false">
@@ -3558,7 +3550,16 @@
             </div>
           </div>
 
-          <p class="media-fallback" id="media-fallback" role="note"></p>
+          <p class="media-fallback" id="media-fallback" role="note">
+            <span id="media-fallback-message"></span><a class="media-external" id="media-external"
+              href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" hidden>
+              <span>Abrir en YouTube</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <path d="M7 17 17 7M7 7h10v10" />
+              </svg>
+            </a><span id="media-fallback-period" hidden>.</span>
+          </p>
           <p class="media-note" id="media-note" role="status" hidden></p>
 
           <div class="media-foot" aria-hidden="true">

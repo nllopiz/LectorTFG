@@ -466,7 +466,7 @@ a {
   overflow-y: auto;
   overscroll-behavior: contain;
   overflow-anchor: none;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: stable both-edges;
   scrollbar-width: thin;
   scrollbar-color: var(--border-strong) transparent;
   background: var(--bg);
@@ -1237,8 +1237,8 @@ a {
 }
 
 .media-list-item__provider--youtube {
-  background: var(--youtube-soft);
-  color: var(--youtube);
+  background: var(--surface-soft);
+  color: var(--text);
 }
 
 .media-list-item__provider--spotify {
@@ -1338,9 +1338,7 @@ a {
   flex: 0 0 auto;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-areas:
-    "provider label close"
-    "external external external";
+  grid-template-areas: "provider label close";
   align-items: center;
   gap: 5px 10px;
   padding: 10px 12px 9px;
@@ -1373,8 +1371,12 @@ a {
 }
 
 .media-provider[data-provider="youtube"] {
-  background: var(--youtube-soft);
-  color: var(--youtube);
+  background: var(--surface-soft);
+  color: var(--text);
+}
+
+.media-provider[data-provider="youtube"]::before {
+  background: var(--accent);
 }
 
 .media-provider[data-provider="spotify"] {
@@ -1426,11 +1428,10 @@ a {
 }
 
 .media-external {
-  grid-area: external;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  justify-self: start;
+  margin-left: 4px;
   min-height: 24px;
   color: var(--accent);
   font-family: var(--font-ui);
@@ -1700,7 +1701,7 @@ a {
   }
 
   .workspace.has-open-media {
-    grid-template-columns: calc(2rem + 3em) minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: 250px minmax(0, 1fr) var(--media-w);
   }
 
   .toc-sidebar {
@@ -1708,97 +1709,21 @@ a {
     min-width: 0;
   }
 
-  .workspace.has-open-media .toc-sidebar__header {
-    justify-content: center;
-    padding-right: 8px;
-    padding-left: 8px;
-  }
-
   .workspace.has-open-media .toc-sidebar {
-    overflow: visible;
+    width: 250px;
+    max-width: 250px;
   }
 
-  .workspace.has-open-media .toc-list {
-    padding-right: 2px;
-    padding-left: 2px;
+  .workspace.has-open-media .doc-sheet {
+    padding-right: 0;
+    padding-left: 0;
   }
 
-  .workspace.has-open-media .toc-item-row {
-    gap: 2px;
-  }
-
-  .workspace.has-open-media .toc-item {
-    width: auto;
-    padding: 8px 2px;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .workspace.has-open-media .toc-item[data-level] {
-    padding-left: 2px;
-  }
-
-  .workspace.has-open-media .toc-item::before {
-    display: none;
-  }
-
-  .workspace.has-open-media .toc-item__label {
-    display: none;
-  }
-
-  .workspace.has-open-media .toc-item__compact-label {
-    display: block;
-    overflow: hidden;
-    font-size: 0.78rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .workspace.has-open-media .toc-item-info {
-    display: none;
-    flex: 0 0 24px;
-    place-items: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 0.75rem;
-    font-style: italic;
-    font-weight: 800;
-  }
-
-  .workspace.has-open-media .toc-item-info:hover {
-    background: var(--surface-soft);
-    color: var(--text);
-  }
-
-  .workspace.has-open-media .toc-tooltip {
-    display: block;
-    position: absolute;
-    left: calc(100% + 8px);
-    z-index: 40;
-    width: max-content;
-    max-width: min(320px, calc(50vw - 120px));
-    max-height: calc(100% - 16px);
-    padding: 10px 12px;
-    overflow-y: auto;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    background: var(--surface-raised);
-    box-shadow: var(--shadow-soft);
-    color: var(--text);
-    font-size: 0.8rem;
-    line-height: 1.45;
-    pointer-events: none;
-    transform: translateY(-50%);
-  }
-
-  .workspace.has-open-media .toc-item-row:hover .toc-item__compact-label,
-  .workspace.has-open-media .toc-item-row:focus-within .toc-item__compact-label {
-    color: var(--accent);
+  .workspace.has-open-media .doc-content {
+    width: 100%;
+    max-width: calc(740px - clamp(20px, 5vw, 54px) - clamp(20px, 5vw, 54px));
+    margin-right: auto;
+    margin-left: auto;
   }
 
   .media-panel {
@@ -1814,12 +1739,6 @@ a {
   .media-panel__inner {
     width: 100%;
     min-width: 0;
-  }
-}
-
-@media (min-width: 900px) and (orientation: landscape) and (hover: none) {
-  .workspace.has-open-media .toc-item-info {
-    display: grid;
   }
 }
 

@@ -53,6 +53,8 @@ const mediaLabel = document.getElementById('media-label');
 const mediaExternal = document.getElementById('media-external');
 const mediaClose = document.getElementById('media-close');
 const mediaFallback = document.getElementById('media-fallback');
+const mediaFallbackMessage = document.getElementById('media-fallback-message');
+const mediaFallbackPeriod = document.getElementById('media-fallback-period');
 const mediaNote = document.getElementById('media-note');
 
 const desktopQuery = window.matchMedia('(min-width: 900px)');
@@ -1222,11 +1224,13 @@ function openMedia(media, trigger) {
     mediaExternal.href = externalUrl;
     mediaExternal.querySelector('span').textContent = provider.externalLabel;
     mediaExternal.setAttribute('aria-label', `${provider.externalLabel}: ${media.label}`);
-    mediaFallback.textContent = `Si no se reproduce aquí, usa «${provider.externalLabel}».`;
+    mediaFallbackMessage.textContent = 'Si no se reproduce aquí, puedes';
+    mediaFallbackPeriod.hidden = false;
   } else {
     mediaExternal.hidden = true;
     mediaExternal.removeAttribute('href');
-    mediaFallback.textContent = 'No hay un enlace externo disponible para este contenido.';
+    mediaFallbackMessage.textContent = 'No hay un enlace externo disponible para este contenido.';
+    mediaFallbackPeriod.hidden = true;
   }
 
   mediaNote.hidden = navigator.onLine;
