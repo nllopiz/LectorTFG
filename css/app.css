@@ -582,6 +582,7 @@ a {
   margin-top: 1.6em;
   font-size: 1.4em;
   letter-spacing: -0.01em;
+  text-align: center;
 }
 
 .doc-sheet h4 {
@@ -596,6 +597,14 @@ a {
   margin: 0 0 1.08em;
   text-indent: 2em;
   text-align: justify;
+}
+
+.doc-sheet .bibliography-entry {
+  margin-bottom: 0.8em;
+  padding-left: 2em;
+  text-indent: -2em;
+  text-align: left;
+  overflow-wrap: anywhere;
 }
 
 .doc-sheet .doc-lede {
@@ -720,12 +729,18 @@ a {
 }
 
 .doc-sheet table {
-  width: max-content;
-  min-width: 100%;
+  /*width: max-content;
+  min-width: 100%;*/
   border-collapse: collapse;
   font-family: var(--font-ui);
   font-size: 0.7em;
   line-height: 1.5;
+}
+
+.doc-sheet table p {
+  margin: 0;
+  text-indent: 0;
+  text-align: left;
 }
 
 .table-scroll table {
