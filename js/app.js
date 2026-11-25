@@ -560,8 +560,8 @@ async function loadVideoAnalyses() {
       updateMediaSize();
     }
   } catch (error) {
-    console.error('No se pudieron cargar los análisis de video.', error);
-    showToast('No se pudieron cargar los análisis de video.', 'error');
+    console.error('No se pudieron cargar los análisis de las canciones.', error);
+    showToast('No se pudieron cargar los análisis de las canciones.', 'error');
   }
 }
 
@@ -585,7 +585,7 @@ mediaAnalysisTrigger.addEventListener('click', () => {
 
   updateMediaAnalysisDialogPosition();
   renderVideoAnalysis(analysis);
-  mediaAnalysisTitle.textContent = `Análisis del video: ${activeMedia.label}`;
+  mediaAnalysisTitle.textContent = `Análisis de la Canción: ${activeMedia.label}`;
   openNavigationDialog(mediaAnalysisDialog);
 });
 desktopQuery.addEventListener('change', updateTocLayout);
