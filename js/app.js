@@ -1335,7 +1335,7 @@ function openMedia(media, trigger) {
     mediaExternal.href = externalUrl;
     mediaExternal.querySelector('span').textContent = provider.externalLabel;
     mediaExternal.setAttribute('aria-label', `${provider.externalLabel}: ${media.label}`);
-    mediaFallbackMessage.textContent = 'Si no se reproduce aquí, puedes';
+    mediaFallbackMessage.textContent = 'Espera unos segundos. Si no se reproduce aquí, puedes';
     mediaFallbackPeriod.hidden = false;
   } else {
     mediaExternal.hidden = true;
