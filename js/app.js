@@ -66,7 +66,7 @@ const landscapeQuery = window.matchMedia('(orientation: landscape)');
 const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-const DOCUMENT_NAME = 'Lector TFG';
+const DOCUMENT_NAME = 'El cuándo de mi por qué';
 
 const state = {
   headings: [],
@@ -202,7 +202,7 @@ function showReader(headings, { focus = true } = {}) {
 
   const firstHeading = state.headings[0];
   skipLink.setAttribute('href', `#${firstHeading ? firstHeading.id : 'doc-pane'}`);
-  document.title = DOCUMENT_NAME;
+  document.title = `${DOCUMENT_NAME} · Lector TFG`;
 
   if (focus) {
     docPane.focus({ preventScroll: true });
@@ -585,7 +585,7 @@ mediaAnalysisTrigger.addEventListener('click', () => {
 
   updateMediaAnalysisDialogPosition();
   renderVideoAnalysis(analysis);
-  mediaAnalysisTitle.textContent = `Análisis de la Canción: ${activeMedia.label}`;
+  mediaAnalysisTitle.textContent = `Análisis de la canción: ${activeMedia.label}`;
   openNavigationDialog(mediaAnalysisDialog);
 });
 desktopQuery.addEventListener('change', updateTocLayout);
@@ -859,7 +859,10 @@ function changeFontSize(delta) {
     return;
   }
 
+  const anchor = beginScrollAnchor();
+
   applyFontSize(next);
+  runScrollAnchor(anchor, 0);
   scheduleReadingPositionSave();
   state.prefs = writePrefs({ ...state.prefs, fontSize: next });
   announce(`Tamaño del texto: ${next} píxeles.`);
@@ -879,7 +882,9 @@ function beginScrollAnchor() {
   }
 
   const paneTop = docPane.getBoundingClientRect().top;
-  const blocks = Array.from(docContent.children);
+  const blocks = Array.from(
+    docContent.querySelectorAll(':scope > section > *, :scope > :not(section)')
+  );
 
   for (const block of blocks) {
     const rect = block.getBoundingClientRect();
@@ -1476,6 +1481,12 @@ document.addEventListener('keydown', (event) => {
   if (mediaAnalysisDialog.open) {
     event.preventDefault();
     closeNavigationDialog(mediaAnalysisDialog);
+    return;
+  }
+
+  if (mediaDialog.open) {
+    event.preventDefault();
+    closeNavigationDialog(mediaDialog);
     return;
   }
 

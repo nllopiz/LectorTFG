@@ -1,0 +1,311 @@
+{
+  "1-portada.png": {
+    "base": "1-portada",
+    "width": 646,
+    "height": 795,
+    "variants": [
+      "1-portada.webp",
+      "1-portada-480.webp"
+    ]
+  },
+  "10-capturaVideo5.png": {
+    "base": "10-capturaVideo5",
+    "width": 591,
+    "height": 415,
+    "variants": [
+      "10-capturaVideo5.webp",
+      "10-capturaVideo5-480.webp"
+    ]
+  },
+  "11-capturaVideo6.png": {
+    "base": "11-capturaVideo6",
+    "width": 703,
+    "height": 491,
+    "variants": [
+      "11-capturaVideo6.webp",
+      "11-capturaVideo6-480.webp"
+    ]
+  },
+  "12-capturaVideo7.png": {
+    "base": "12-capturaVideo7",
+    "width": 699,
+    "height": 492,
+    "variants": [
+      "12-capturaVideo7.webp",
+      "12-capturaVideo7-480.webp"
+    ]
+  },
+  "13-capturaVideo8.png": {
+    "base": "13-capturaVideo8",
+    "width": 710,
+    "height": 500,
+    "variants": [
+      "13-capturaVideo8.webp",
+      "13-capturaVideo8-480.webp"
+    ]
+  },
+  "14-capturaVideo9.png": {
+    "base": "14-capturaVideo9",
+    "width": 708,
+    "height": 501,
+    "variants": [
+      "14-capturaVideo9.webp",
+      "14-capturaVideo9-480.webp"
+    ]
+  },
+  "15-capturaVideo10.png": {
+    "base": "15-capturaVideo10",
+    "width": 726,
+    "height": 509,
+    "variants": [
+      "15-capturaVideo10.webp",
+      "15-capturaVideo10-480.webp"
+    ]
+  },
+  "16-capturaVideo11.png": {
+    "base": "16-capturaVideo11",
+    "width": 714,
+    "height": 507,
+    "variants": [
+      "16-capturaVideo11.webp",
+      "16-capturaVideo11-480.webp"
+    ]
+  },
+  "17-capturaVideo12.png": {
+    "base": "17-capturaVideo12",
+    "width": 856,
+    "height": 602,
+    "variants": [
+      "17-capturaVideo12.webp",
+      "17-capturaVideo12-480.webp",
+      "17-capturaVideo12-800.webp"
+    ]
+  },
+  "18-capturaVideo13.png": {
+    "base": "18-capturaVideo13",
+    "width": 735,
+    "height": 511,
+    "variants": [
+      "18-capturaVideo13.webp",
+      "18-capturaVideo13-480.webp"
+    ]
+  },
+  "19-capturaVideo14.png": {
+    "base": "19-capturaVideo14",
+    "width": 733,
+    "height": 512,
+    "variants": [
+      "19-capturaVideo14.webp",
+      "19-capturaVideo14-480.webp"
+    ]
+  },
+  "2-tapa.png": {
+    "base": "2-tapa",
+    "width": 722,
+    "height": 512,
+    "variants": [
+      "2-tapa.webp",
+      "2-tapa-480.webp"
+    ]
+  },
+  "20-capturaVideo15.png": {
+    "base": "20-capturaVideo15",
+    "width": 940,
+    "height": 662,
+    "variants": [
+      "20-capturaVideo15.webp",
+      "20-capturaVideo15-480.webp",
+      "20-capturaVideo15-800.webp"
+    ]
+  },
+  "21-capturaVideo16.png": {
+    "base": "21-capturaVideo16",
+    "width": 977,
+    "height": 595,
+    "variants": [
+      "21-capturaVideo16.webp",
+      "21-capturaVideo16-480.webp",
+      "21-capturaVideo16-800.webp"
+    ]
+  },
+  "22-capturaVideo17.png": {
+    "base": "22-capturaVideo17",
+    "width": 1076,
+    "height": 532,
+    "variants": [
+      "22-capturaVideo17.webp",
+      "22-capturaVideo17-480.webp",
+      "22-capturaVideo17-800.webp"
+    ]
+  },
+  "23-capturaVideo18.png": {
+    "base": "23-capturaVideo18",
+    "width": 992,
+    "height": 547,
+    "variants": [
+      "23-capturaVideo18.webp",
+      "23-capturaVideo18-480.webp",
+      "23-capturaVideo18-800.webp"
+    ]
+  },
+  "24-capturaVideo19.png": {
+    "base": "24-capturaVideo19",
+    "width": 967,
+    "height": 681,
+    "variants": [
+      "24-capturaVideo19.webp",
+      "24-capturaVideo19-480.webp",
+      "24-capturaVideo19-800.webp"
+    ]
+  },
+  "25-capturaVideo20.png": {
+    "base": "25-capturaVideo20",
+    "width": 976,
+    "height": 687,
+    "variants": [
+      "25-capturaVideo20.webp",
+      "25-capturaVideo20-480.webp",
+      "25-capturaVideo20-800.webp"
+    ]
+  },
+  "26-capturaVideo21.png": {
+    "base": "26-capturaVideo21",
+    "width": 679,
+    "height": 481,
+    "variants": [
+      "26-capturaVideo21.webp",
+      "26-capturaVideo21-480.webp"
+    ]
+  },
+  "27-capturaVideo22.png": {
+    "base": "27-capturaVideo22",
+    "width": 792,
+    "height": 482,
+    "variants": [
+      "27-capturaVideo22.webp",
+      "27-capturaVideo22-480.webp"
+    ]
+  },
+  "28-capturaVideo23.png": {
+    "base": "28-capturaVideo23",
+    "width": 847,
+    "height": 601,
+    "variants": [
+      "28-capturaVideo23.webp",
+      "28-capturaVideo23-480.webp",
+      "28-capturaVideo23-800.webp"
+    ]
+  },
+  "29-capturaVideo24.png": {
+    "base": "29-capturaVideo24",
+    "width": 897,
+    "height": 632,
+    "variants": [
+      "29-capturaVideo24.webp",
+      "29-capturaVideo24-480.webp",
+      "29-capturaVideo24-800.webp"
+    ]
+  },
+  "3-diseño.png": {
+    "base": "3-diseno",
+    "width": 641,
+    "height": 452,
+    "variants": [
+      "3-diseno.webp",
+      "3-diseno-480.webp"
+    ]
+  },
+  "30-capturaVideo25.png": {
+    "base": "30-capturaVideo25",
+    "width": 1020,
+    "height": 612,
+    "variants": [
+      "30-capturaVideo25.webp",
+      "30-capturaVideo25-480.webp",
+      "30-capturaVideo25-800.webp"
+    ]
+  },
+  "31-grafico1.png": {
+    "base": "31-grafico1",
+    "width": 1024,
+    "height": 724,
+    "variants": [
+      "31-grafico1.webp",
+      "31-grafico1-480.webp",
+      "31-grafico1-800.webp"
+    ]
+  },
+  "32-grafico2.png": {
+    "base": "32-grafico2",
+    "width": 1024,
+    "height": 712,
+    "variants": [
+      "32-grafico2.webp",
+      "32-grafico2-480.webp",
+      "32-grafico2-800.webp"
+    ]
+  },
+  "33-grafico3.png": {
+    "base": "33-grafico3",
+    "width": 1024,
+    "height": 724,
+    "variants": [
+      "33-grafico3.webp",
+      "33-grafico3-480.webp",
+      "33-grafico3-800.webp"
+    ]
+  },
+  "4-chapita.png": {
+    "base": "4-chapita",
+    "width": 662,
+    "height": 467,
+    "variants": [
+      "4-chapita.webp",
+      "4-chapita-480.webp"
+    ]
+  },
+  "5-tapaLibro.png": {
+    "base": "5-tapaLibro",
+    "width": 371,
+    "height": 397,
+    "variants": [
+      "5-tapaLibro.webp"
+    ]
+  },
+  "6-capturaVideo1.png": {
+    "base": "6-capturaVideo1",
+    "width": 551,
+    "height": 385,
+    "variants": [
+      "6-capturaVideo1.webp",
+      "6-capturaVideo1-480.webp"
+    ]
+  },
+  "7-capturaVideo2.png": {
+    "base": "7-capturaVideo2",
+    "width": 571,
+    "height": 402,
+    "variants": [
+      "7-capturaVideo2.webp",
+      "7-capturaVideo2-480.webp"
+    ]
+  },
+  "8-capturaVideo3.png": {
+    "base": "8-capturaVideo3",
+    "width": 573,
+    "height": 403,
+    "variants": [
+      "8-capturaVideo3.webp",
+      "8-capturaVideo3-480.webp"
+    ]
+  },
+  "9-capturaVideo4.png": {
+    "base": "9-capturaVideo4",
+    "width": 592,
+    "height": 414,
+    "variants": [
+      "9-capturaVideo4.webp",
+      "9-capturaVideo4-480.webp"
+    ]
+  }
+}

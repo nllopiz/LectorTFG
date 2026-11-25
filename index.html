@@ -6,8 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#4E381E">
-  <meta name="description" content="Lector TFG: una experiencia de lectura">
-  <title>Lector TFG</title>
+  <meta name="description"
+    content="Lector web del Trabajo Final de Grado «El cuándo de mi por qué. La revitalización del folklore argentino en la era del Tecnoceno».">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:title" content="El cuándo de mi por qué · Lector TFG">
+  <meta property="og:description"
+    content="La revitalización del folklore argentino en la era del Tecnoceno. Trabajo Final de Grado en formato de lectura web.">
+  <title>El cuándo de mi por qué · Lector TFG</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/app.css">
   <script src="js/theme-init.js"></script>
@@ -57,7 +64,7 @@
         </button>
 
         <button id="media-button" class="icon-button icon-button--wide" type="button" aria-label="Abrir lista de medios"
-          title="Medios" hidden>
+          aria-haspopup="dialog" aria-controls="media-dialog" title="Medios" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
             stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="5" width="18" height="14" rx="2" />
@@ -102,9 +109,9 @@
           <div class="doc-content" id="doc-content">
             <section class="document-cover" aria-labelledby="document-title">
               <p class="doc-kicker">Trabajo Final de Grado</p>
-              <h1>El cuándo de mi por qué</h1>
+              <h1 id="document-title">El cuándo de mi por qué</h1>
               <p class="doc-lede">La revitalización del folklore argentino en la era del Tecnoceno.</p>
-              <img src="./assets/images/1-portada.png" alt="Portada del libro" class="doc-cover-image">
+              <img src="./assets/images/1-portada.webp" srcset="./assets/images/1-portada-480.webp 480w, ./assets/images/1-portada.webp 646w" sizes="(max-width: 646px) calc(100vw - 40px), 646px" width="646" height="795" alt="Portada del libro" class="doc-cover-image" loading="eager" decoding="async" fetchpriority="high">
             </section>
 
             <section aria-labelledby="agradecimientos-title">
@@ -1772,7 +1779,7 @@
                 aparecen
                 en las canciones.</p>
 
-              <img src="./assets/images/2-tapa.png" alt="Imagen de la Tapa del álbum La vida era más corta">
+              <img src="./assets/images/2-tapa.webp" srcset="./assets/images/2-tapa-480.webp 480w, ./assets/images/2-tapa.webp 722w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="722" height="512" alt="Imagen de la Tapa del álbum La vida era más corta" loading="lazy" decoding="async">
 
               <p>Uno de los aspectos m&aacute;s destacados de esta identidad es el trabajo
                 tipogr&aacute;fico desarrollado por el dise&ntilde;ador Javier Unknos, en colaboraci&oacute;n con
@@ -1783,7 +1790,7 @@
                 sobre
                 el tiempo y la conciencia del presente (Weaver, 2026).</p>
 
-              <img src="./assets/images/3-diseño.png" alt="Imagen del diseño tipográfico del álbum La vida era más corta">
+              <img src="./assets/images/3-diseno.webp" srcset="./assets/images/3-diseno-480.webp 480w, ./assets/images/3-diseno.webp 641w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="641" height="452" alt="Imagen del diseño tipográfico del álbum La vida era más corta" loading="lazy" decoding="async">
 
               <p>El dise&ntilde;ador parti&oacute; de una tipograf&iacute;a propia denominada
                 Academic, sobre cuya estructura desarroll&oacute; un sistema personalizado de letras, incorporando
@@ -1845,7 +1852,7 @@
               <h5>La &ldquo;chapita&rdquo; de la portada: memoria,
                 materialidad y tradici&oacute;n</h5>
 
-              <img src="./assets/images/4-chapita.png" alt="Imagen de la chapita de la portada del álbum La vida era más corta">
+              <img src="./assets/images/4-chapita.webp" srcset="./assets/images/4-chapita-480.webp 480w, ./assets/images/4-chapita.webp 662w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="662" height="467" alt="Imagen de la chapita de la portada del álbum La vida era más corta" loading="lazy" decoding="async">
 
               <p>Otro elemento significativo de la identidad visual es la pieza met&aacute;lica que
                 ocupa el centro de la portada. Su presencia adquiere especial relevancia por el contraste que establece
@@ -1897,7 +1904,7 @@
                 ampliando
                 su dimensi&oacute;n individual hacia una experiencia colectiva.</p>
 
-              <img src="./assets/images/5-tapaLibro.png" alt="Imagen de la tapa del libro que acompaña al álbum La vida era más corta">
+              <img src="./assets/images/5-tapaLibro.webp" srcset="./assets/images/5-tapaLibro.webp 371w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="371" height="397" alt="Imagen de la tapa del libro que acompaña al álbum La vida era más corta" loading="lazy" decoding="async">
 
               <p>En resumen, esta lectura adquiere especial relevancia al relacionarla con la
                 propuesta musical de Milo J, quien recupera sonidos, g&eacute;neros y tradiciones del folklore argentino
@@ -1942,7 +1949,7 @@
                 y
                 cultural que atraviesa el disco.</p>
 
-              <img src="./assets/images/6-capturaVideo1.png" alt="Imagen de la captura del videoclip Bajo de la piel">
+              <img src="./assets/images/6-capturaVideo1.webp" srcset="./assets/images/6-capturaVideo1-480.webp 480w, ./assets/images/6-capturaVideo1.webp 551w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="551" height="385" alt="Imagen de la captura del videoclip Bajo de la piel" loading="lazy" decoding="async">
 
               <p>En este universo tambi&eacute;n se destaca la presencia de personajes que parecen
                 representar experiencias colectivas antes que individualidades reconocibles. Ni&ntilde;os, trabajadores,
@@ -1960,18 +1967,18 @@
                 y
                 la identidad.</p>
 
-              <img src="./assets/images/7-capturaVideo2.png" alt="Imagen de la captura del videoclip Ama de mi sol">
+              <img src="./assets/images/7-capturaVideo2.webp" srcset="./assets/images/7-capturaVideo2-480.webp 480w, ./assets/images/7-capturaVideo2.webp 571w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="571" height="402" alt="Imagen de la captura del videoclip Ama de mi sol" loading="lazy" decoding="async">
 
-              <img src="./assets/images/8-capturaVideo3.png" alt="Imagen de la captura del videoclip Bajo de la piel">
+              <img src="./assets/images/8-capturaVideo3.webp" srcset="./assets/images/8-capturaVideo3-480.webp 480w, ./assets/images/8-capturaVideo3.webp 573w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="573" height="403" alt="Imagen de la captura del videoclip Bajo de la piel" loading="lazy" decoding="async">
 
               <p>La muerte y la ausencia constituyen otros motivos recurrentes. Los cementerios,
                 los ata&uacute;des, las procesiones, las velas y los altares introducen referencias a la despedida y a
                 las
                 formas populares de vincularse con quienes ya no est&aacute;n. </p>
 
-              <img src="./assets/images/9-capturaVideo4.png" alt="Imagen de la captura del videoclip Niño">
+              <img src="./assets/images/9-capturaVideo4.webp" srcset="./assets/images/9-capturaVideo4-480.webp 480w, ./assets/images/9-capturaVideo4.webp 592w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="592" height="414" alt="Imagen de la captura del videoclip Niño" loading="lazy" decoding="async">
 
-              <img src="./assets/images/10-capturaVideo5.png" alt="Imagen de la captura del videoclip Luciérnagas">
+              <img src="./assets/images/10-capturaVideo5.webp" srcset="./assets/images/10-capturaVideo5-480.webp 480w, ./assets/images/10-capturaVideo5.webp 591w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="591" height="415" alt="Imagen de la captura del videoclip Luciérnagas" loading="lazy" decoding="async">
 
               <p>Estos elementos se articulan con s&iacute;mbolos de car&aacute;cter religioso,
                 como los rosarios y las im&aacute;genes de santos, que conviven con pr&aacute;cticas y objetos de la
@@ -1979,13 +1986,13 @@
                 cotidiana. De esta manera, el universo audiovisual recupera expresiones de la religiosidad popular y las
                 incorpora a relatos atravesados por la memoria, la p&eacute;rdida y la espiritualidad.</p>
 
-              <img src="./assets/images/11-capturaVideo6.png" alt="Imagen de la captura del videoclip Lucía">
+              <img src="./assets/images/11-capturaVideo6.webp" srcset="./assets/images/11-capturaVideo6-480.webp 480w, ./assets/images/11-capturaVideo6.webp 703w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="703" height="491" alt="Imagen de la captura del videoclip Lucía" loading="lazy" decoding="async">
 
-              <img src="./assets/images/12-capturaVideo7.png" alt="Imagen de la captura del videoclip Niño">
+              <img src="./assets/images/12-capturaVideo7.webp" srcset="./assets/images/12-capturaVideo7-480.webp 480w, ./assets/images/12-capturaVideo7.webp 699w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="699" height="492" alt="Imagen de la captura del videoclip Niño" loading="lazy" decoding="async">
 
-              <img src="./assets/images/13-capturaVideo8.png" alt="Imagen de la captura del videoclip Luciérnagas">
+              <img src="./assets/images/13-capturaVideo8.webp" srcset="./assets/images/13-capturaVideo8-480.webp 480w, ./assets/images/13-capturaVideo8.webp 710w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="710" height="500" alt="Imagen de la captura del videoclip Luciérnagas" loading="lazy" decoding="async">
 
-              <img src="./assets/images/14-capturaVideo9.png" alt="Imagen de la captura del videoclip Bajo de la piel">
+              <img src="./assets/images/14-capturaVideo9.webp" srcset="./assets/images/14-capturaVideo9-480.webp 480w, ./assets/images/14-capturaVideo9.webp 708w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="708" height="501" alt="Imagen de la captura del videoclip Bajo de la piel" loading="lazy" decoding="async">
 
 
               <p>El fuego es, a su vez, uno de los elementos simb&oacute;licos que aparece con
@@ -2000,9 +2007,9 @@
                 introduce contrastes que refuerzan la tensi&oacute;n entre la vida y la muerte, la ausencia y el
                 recuerdo.</p>
 
-              <img src="./assets/images/15-capturaVideo10.png" alt="Imagen de la captura del videoclip Jangadero">
+              <img src="./assets/images/15-capturaVideo10.webp" srcset="./assets/images/15-capturaVideo10-480.webp 480w, ./assets/images/15-capturaVideo10.webp 726w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="726" height="509" alt="Imagen de la captura del videoclip Jangadero" loading="lazy" decoding="async">
 
-              <img src="./assets/images/16-capturaVideo11.png" alt="Imagen de la captura del videoclip Recordé">
+              <img src="./assets/images/16-capturaVideo11.webp" srcset="./assets/images/16-capturaVideo11-480.webp 480w, ./assets/images/16-capturaVideo11.webp 714w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="714" height="507" alt="Imagen de la captura del videoclip Recordé" loading="lazy" decoding="async">
 
               <p>La dimensi&oacute;n est&eacute;tica tambi&eacute;n contribuye a la
                 construcci&oacute;n de este universo. Predominan los ambientes nocturnos, las luces tenues, las sombras
@@ -2015,7 +2022,7 @@
                 humildes forman parte de una composici&oacute;n visual que recupera materiales y pr&aacute;cticas
                 reconocibles de distintos contextos argentinos.</p>
 
-              <img src="./assets/images/17-capturaVideo12.png" alt="Imagen de la captura del videoclip Lucía">
+              <img src="./assets/images/17-capturaVideo12.webp" srcset="./assets/images/17-capturaVideo12-480.webp 480w, ./assets/images/17-capturaVideo12-800.webp 800w, ./assets/images/17-capturaVideo12.webp 856w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="856" height="602" alt="Imagen de la captura del videoclip Lucía" loading="lazy" decoding="async">
 
               <p>Por &uacute;ltimo, la continuidad entre las piezas audiovisuales se construye a
                 partir de la reaparici&oacute;n de personajes y situaciones. Algunas figuras que aparecen en un
@@ -2044,9 +2051,9 @@
                 funcionan as&iacute; como una alegor&iacute;a colectiva de la memoria popular.
               </p>
 
-              <img src="./assets/images/18-capturaVideo13.png" alt="Imagen de la captura del videoclip Jangadero">
+              <img src="./assets/images/18-capturaVideo13.webp" srcset="./assets/images/18-capturaVideo13-480.webp 480w, ./assets/images/18-capturaVideo13.webp 735w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="735" height="511" alt="Imagen de la captura del videoclip Jangadero" loading="lazy" decoding="async">
 
-              <img src="./assets/images/19-capturaVideo14.png" alt="Imagen de la captura del videoclip Jangadero">
+              <img src="./assets/images/19-capturaVideo14.webp" srcset="./assets/images/19-capturaVideo14-480.webp 480w, ./assets/images/19-capturaVideo14.webp 733w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="733" height="512" alt="Imagen de la captura del videoclip Jangadero" loading="lazy" decoding="async">
 
 
               <h5><strong>B. El Tiny Desk: de Sudam&eacute;rica para el
@@ -2065,7 +2072,7 @@
                 canci&oacute;n que no formaba parte del &aacute;lbum (Inzillo, 2026b).
               </p>
 
-              <img src="./assets/images/20-capturaVideo15.png" alt="Imagen de la captura del videoclip Tiny Desk de Milo J">
+              <img src="./assets/images/20-capturaVideo15.webp" srcset="./assets/images/20-capturaVideo15-480.webp 480w, ./assets/images/20-capturaVideo15-800.webp 800w, ./assets/images/20-capturaVideo15.webp 940w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="940" height="662" alt="Imagen de la captura del videoclip Tiny Desk de Milo J" loading="lazy" decoding="async">
 
               <p>Milo est&aacute; acompa&ntilde;ado por un grupo de m&uacute;sicos con recorridos y
                 formaciones diversas. La direcci&oacute;n musical est&aacute; a cargo de Lautaro Fern&aacute;ndez, quien
@@ -2089,7 +2096,7 @@
                 la versi&oacute;n del &aacute;lbum. De esta manera, la sesi&oacute;n ampl&iacute;a una b&uacute;squeda
                 musical que conecta distintas expresiones de la cultura popular latinoamericana (Inzillo, 2026b).</p>
 
-              <img src="./assets/images/21-capturaVideo16.png" alt="Imagen de la captura del videoclip Tiny Desk de Milo J">
+              <img src="./assets/images/21-capturaVideo16.webp" srcset="./assets/images/21-capturaVideo16-480.webp 480w, ./assets/images/21-capturaVideo16-800.webp 800w, ./assets/images/21-capturaVideo16.webp 977w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="977" height="595" alt="Imagen de la captura del videoclip Tiny Desk de Milo J" loading="lazy" decoding="async">
 
               <p>Entre los m&uacute;sicos tambi&eacute;n se destaca Tamara Meschller, cuya
                 participaci&oacute;n llam&oacute; la atenci&oacute;n por su versatilidad instrumental. La artista
@@ -2105,7 +2112,7 @@
                 artistas vinculadas con la renovaci&oacute;n y la transmisi&oacute;n del folklore argentino (Inzillo,
                 2026a).</p>
 
-              <img src="./assets/images/22-capturaVideo17.png" alt="Imagen de la captura del videoclip Tiny Desk de Milo J">
+              <img src="./assets/images/22-capturaVideo17.webp" srcset="./assets/images/22-capturaVideo17-480.webp 480w, ./assets/images/22-capturaVideo17-800.webp 800w, ./assets/images/22-capturaVideo17.webp 1076w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="1076" height="532" alt="Imagen de la captura del videoclip Tiny Desk de Milo J" loading="lazy" decoding="async">
 
               <p>La escenograf&iacute;a es otro de los aspectos centrales de la
                 presentaci&oacute;n. A diferencia de una ambientaci&oacute;n construida especialmente para la
@@ -2123,7 +2130,7 @@
                 all&iacute; tras su participaci&oacute;n en el ciclo. As&iacute;, un elemento cotidiano de la cultura
                 argentina pas&oacute; a formar parte del espacio permanente del Tiny Desk.</p>
 
-              <img src="./assets/images/23-capturaVideo18.png" alt="Imagen de la captura del videoclip Tiny Desk de Milo J">
+              <img src="./assets/images/23-capturaVideo18.webp" srcset="./assets/images/23-capturaVideo18-480.webp 480w, ./assets/images/23-capturaVideo18-800.webp 800w, ./assets/images/23-capturaVideo18.webp 992w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="992" height="547" alt="Imagen de la captura del videoclip Tiny Desk de Milo J" loading="lazy" decoding="async">
 
               <p>Dentro de los objetos exportados a Estados Unidos, se encuentra el bander&iacute;n
                 del Club Deportivo Mor&oacute;n, equipo del que Milo es hincha y al que ha acompa&ntilde;ado como
@@ -2144,7 +2151,7 @@
                 cuya
                 portada tiene la imagen de Mercedes Sosa (Inzillo, 2026a).</p>
 
-              <img src="./assets/images/24-capturaVideo19.png" alt="Imagen de la captura del videoclip Tiny Desk de Milo J">
+              <img src="./assets/images/24-capturaVideo19.webp" srcset="./assets/images/24-capturaVideo19-480.webp 480w, ./assets/images/24-capturaVideo19-800.webp 800w, ./assets/images/24-capturaVideo19.webp 967w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="967" height="681" alt="Imagen de la captura del videoclip Tiny Desk de Milo J" loading="lazy" decoding="async">
 
               <p>Algunos de estos elementos tienen historias particulares. El pa&ntilde;uelo de las
                 Abuelas de Plaza de Mayo no es una reproducci&oacute;n: perteneci&oacute; a Delia Giovanola, una de las
@@ -2180,7 +2187,7 @@
                 (Inzillo,
                 2026b).</p>
 
-              <img src="./assets/images/25-capturaVideo20.png" alt="Imagen de la captura del videoclip Tiny Desk de Milo J">
+              <img src="./assets/images/25-capturaVideo20.webp" srcset="./assets/images/25-capturaVideo20-480.webp 480w, ./assets/images/25-capturaVideo20-800.webp 800w, ./assets/images/25-capturaVideo20.webp 976w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="976" height="687" alt="Imagen de la captura del videoclip Tiny Desk de Milo J" loading="lazy" decoding="async">
 
               <p>Los gui&ntilde;os musicales tambi&eacute;n aparecen en la ropa de los integrantes
                 de la banda. Mart&iacute;n Beckerman, por ejemplo, lleva una remera de Los Gardelitos, mientras que el
@@ -2313,9 +2320,9 @@
                 canal oficial de YouTube y a las principales plataformas de streaming musical (Billboard Argentina,
                 2026).</p>
 
-              <img src="./assets/images/26-capturaVideo21.png" alt="Imagen de la captura del videoclip La Jangada de Milo J">
+              <img src="./assets/images/26-capturaVideo21.webp" srcset="./assets/images/26-capturaVideo21-480.webp 480w, ./assets/images/26-capturaVideo21.webp 679w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="679" height="481" alt="Imagen de la captura del videoclip La Jangada de Milo J" loading="lazy" decoding="async">
 
-              <img src="./assets/images/27-capturaVideo22.png" alt="Imagen de la captura del videoclip La Jangada de Milo J">
+              <img src="./assets/images/27-capturaVideo22.webp" srcset="./assets/images/27-capturaVideo22-480.webp 480w, ./assets/images/27-capturaVideo22.webp 792w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="792" height="482" alt="Imagen de la captura del videoclip La Jangada de Milo J" loading="lazy" decoding="async">
 
               <p>&ldquo;La jangada es la&nbsp;uni&oacute;n de 35
                 m&uacute;sicos abrazados por la
@@ -2348,7 +2355,7 @@
                 norte
                 argentino (Inzillo, 2026c).</p>
 
-              <img src="./assets/images/28-capturaVideo23.png" alt="Imagen de la captura del videoclip La Jangada de Milo J">
+              <img src="./assets/images/28-capturaVideo23.webp" srcset="./assets/images/28-capturaVideo23-480.webp 480w, ./assets/images/28-capturaVideo23-800.webp 800w, ./assets/images/28-capturaVideo23.webp 847w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="847" height="601" alt="Imagen de la captura del videoclip La Jangada de Milo J" loading="lazy" decoding="async">
 
               <p>En esta propuesta que integra guitarras, violines, bombos leg&uuml;eros, flautas,
                 piano, bandone&oacute;n y contrabajo, participan m&uacute;sicos de la banda de Milo J, integrantes de
@@ -2357,7 +2364,7 @@
                 L&aacute;zaro
                 Caballero.</p>
 
-              <img src="./assets/images/29-capturaVideo24.png" alt="Imagen de la captura del videoclip La Jangada de Milo J">
+              <img src="./assets/images/29-capturaVideo24.webp" srcset="./assets/images/29-capturaVideo24-480.webp 480w, ./assets/images/29-capturaVideo24-800.webp 800w, ./assets/images/29-capturaVideo24.webp 897w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="897" height="632" alt="Imagen de la captura del videoclip La Jangada de Milo J" loading="lazy" decoding="async">
 
               <p>M&aacute;s que una sucesi&oacute;n de colaboraciones individuales, la
                 producci&oacute;n propone una reuni&oacute;n musical con clima de pe&ntilde;a. En ella conviven
@@ -2571,7 +2578,7 @@
                 experiencias
                 y perspectivas, sin limitarlo a una definici&oacute;n &uacute;nica.</p>
 
-              <img src="./assets/images/30-capturaVideo25.png" alt="Imagen de la captura del videoclip ¡FAlklore!">
+              <img src="./assets/images/30-capturaVideo25.webp" srcset="./assets/images/30-capturaVideo25-480.webp 480w, ./assets/images/30-capturaVideo25-800.webp 800w, ./assets/images/30-capturaVideo25.webp 1020w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="1020" height="612" alt="Imagen de la captura del videoclip ¡FAlklore!" loading="lazy" decoding="async">
 
               <p>En este contexto, la participaci&oacute;n de Milo J adquiere particular relevancia.
                 El artista interpret&oacute; <em>La pucha con el hombre</em>,
@@ -2776,7 +2783,6 @@
                 plataformas digitales participan en la circulaci&oacute;n de <em>La vida era
                   m&aacute;s corta</em>&nbsp;y c&oacute;mo sus l&oacute;gicas de funcionamiento se
                 relacionan con las pr&aacute;cticas culturales de las nuevas generaciones.</p>
-              <h4><strong></strong></h4>
               <h4><strong>Nostalgia, industrias culturales y consumos
                   musicales</strong></h4>
               <p>La relaci&oacute;n entre nostalgia y m&uacute;sica popular permite profundizar el
@@ -2953,7 +2959,7 @@
                 cuenta su distancia temporal y no como una descripci&oacute;n plenamente actualizada de los consumos
                 culturales en Argentina.</p>
 
-                <img src="./assets/images/31-grafico1.png" alt="Gráfico 1: Distribución de la escucha musical por plataforma">
+                <img src="./assets/images/31-grafico1.webp" srcset="./assets/images/31-grafico1-480.webp 480w, ./assets/images/31-grafico1-800.webp 800w, ./assets/images/31-grafico1.webp 1024w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="1024" height="724" alt="Gráfico 1: Distribución de la escucha musical por plataforma" loading="lazy" decoding="async">
 
               <p>De acuerdo con la ENCC 2022, el 96% de la poblaci&oacute;n escuch&oacute;
                 m&uacute;sica durante el &uacute;ltimo a&ntilde;o, mientras que el 80% lo hizo a trav&eacute;s de
@@ -2967,7 +2973,7 @@
                 la centralidad que adquirieron las infraestructuras digitales en el acceso y la circulaci&oacute;n de la
                 m&uacute;sica en Argentina, aunque deben leerse en el marco temporal del relevamiento.</p>
 
-                <img src="./assets/images/32-grafico2.png" alt="Gráfico 2: Distribución de la escucha musical por género">  
+                <img src="./assets/images/32-grafico2.webp" srcset="./assets/images/32-grafico2-480.webp 480w, ./assets/images/32-grafico2-800.webp 800w, ./assets/images/32-grafico2.webp 1024w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="1024" height="712" alt="Gráfico 2: Distribución de la escucha musical por género" loading="lazy" decoding="async">  
 
               <p>La encuesta tambi&eacute;n aporta informaci&oacute;n relevante sobre las
                 preferencias musicales de la poblaci&oacute;n. En 2022, la cumbia y el reggaet&oacute;n encabezaron las
@@ -2980,7 +2986,7 @@
                 la
                 diversificaci&oacute;n de las ofertas musicales.</p>
 
-                <img src="./assets/images/33-grafico3.png" alt="Gráfico 3: Distribución de la escucha musical por edad">
+                <img src="./assets/images/33-grafico3.webp" srcset="./assets/images/33-grafico3-480.webp 480w, ./assets/images/33-grafico3-800.webp 800w, ./assets/images/33-grafico3.webp 1024w" sizes="(max-width: 820px) calc(100vw - 40px), 740px" width="1024" height="724" alt="Gráfico 3: Distribución de la escucha musical por edad" loading="lazy" decoding="async">
 
               <p>A estos datos se suma un indicador espec&iacute;fico sobre la participaci&oacute;n
                 de las nuevas generaciones en el consumo de folklore. Seg&uacute;n un informe de Spotify (como se
@@ -3555,7 +3561,7 @@
             </a><span id="media-fallback-period" hidden>.</span>
           </p>
           <button class="media-analysis-trigger" id="media-analysis-trigger" type="button" aria-haspopup="dialog"
-            aria-controls="media-analysis-dialog" hidden>Ver Análisis de la Canción</button>
+            aria-controls="media-analysis-dialog" hidden>Ver análisis de la canción</button>
           <p class="media-note" id="media-note" role="status" hidden></p>
 
           <div class="media-foot" aria-hidden="true">
@@ -3587,7 +3593,7 @@
 
   <dialog class="media-analysis-dialog" id="media-analysis-dialog" aria-labelledby="media-analysis-title">
     <div class="navigation-dialog__header">
-      <h2 id="media-analysis-title">Análisis de la Canción</h2>
+      <h2 id="media-analysis-title">Análisis de la canción</h2>
       <button class="dialog-close" type="button" data-close-dialog="media-analysis-dialog"
         aria-label="Cerrar análisis de la canción" autofocus>Cerrar</button>
     </div>

@@ -66,6 +66,7 @@ function enhanceMediaLink(link, media) {
 
   link.dataset.label = timeLabel ? `${label} · ${timeLabel}` : label;
   link.setAttribute('aria-expanded', 'false');
+  link.setAttribute('aria-controls', 'media-panel');
 
   const text = document.createElement('span');
   text.className = 'media-link__text';
@@ -117,8 +118,13 @@ function wrapTables(container) {
 
 function prepareImages(container) {
   for (const img of Array.from(container.querySelectorAll('img'))) {
-    img.setAttribute('loading', 'lazy');
-    img.setAttribute('decoding', 'async');
+    if (!img.hasAttribute('loading')) {
+      img.setAttribute('loading', 'lazy');
+    }
+
+    if (!img.hasAttribute('decoding')) {
+      img.setAttribute('decoding', 'async');
+    }
 
     if (!img.hasAttribute('alt')) {
       img.setAttribute('alt', '');
