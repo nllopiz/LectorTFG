@@ -1149,14 +1149,14 @@ a {
   position: absolute;
   top: 50%;
   left: 8px;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: conic-gradient(from 315deg,
     var(--accent) 0deg 90deg,
     transparent 90deg 360deg);
   content: "";
-  transform: translateY(-60%) scaleY(-1);
+  transform: translateY(-60%) translateX(-20%) scaleY(-1);
 }
 
 .toc-item[data-level="1"]::before {
