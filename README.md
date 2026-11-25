@@ -9,6 +9,7 @@ Lector web del Trabajo Final de Grado «El cuándo de mi por qué. La revitaliza
 - Tema claro/oscuro y tamaño de lectura ajustable; las preferencias se guardan en el dispositivo.
 - La lectura se retoma desde la última posición; solo se guarda localmente el encabezado y su desplazamiento, no el contenido.
 - Reproducción integrada de enlaces de YouTube y Spotify, con opción para abrirlos en el servicio original.
+- Direcciones compartibles por sección (`#chapter-2-title`) y navegación con Atrás/Adelante del navegador.
 - Imágenes en WebP con variantes responsive, dimensiones declaradas y carga diferida para evitar saltos de maquetación.
 - Navegación por teclado, foco visible de alto contraste y soporte para movimiento reducido.
 
@@ -46,7 +47,7 @@ No edites a mano esas etiquetas si vas a regenerar las imágenes: vuelve a ejecu
 npm test
 ```
 
-Las pruebas actuales cubren el reconocimiento de enlaces multimedia y las preferencias de lectura.
+Las pruebas actuales cubren el reconocimiento de enlaces multimedia, los enlaces internos por fragmento y las preferencias de lectura.
 
 ## Estructura
 
@@ -57,6 +58,7 @@ Las pruebas actuales cubren el reconocimiento de enlaces multimedia y las prefer
 ├─ js/
 │  ├─ app.js
 │  ├─ document.js
+│  ├─ hash.js
 │  ├─ links.js
 │  ├─ storage.js
 │  └─ theme-init.js
@@ -70,6 +72,7 @@ Las pruebas actuales cubren el reconocimiento de enlaces multimedia y las prefer
 │  ├─ optimize_images.py
 │  └─ update_image_tags.py
 └─ tests/
+   ├─ hash.test.mjs
    ├─ links.test.mjs
    └─ storage.test.mjs
 ```

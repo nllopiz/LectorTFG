@@ -4,6 +4,7 @@
  */
 
 import { prepareDocument } from './document.js';
+import { buildHash, parseHashTarget } from './hash.js';
 
 import {
   FONT_MAX,
@@ -67,6 +68,7 @@ const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
 const DOCUMENT_NAME = 'El cuándo de mi por qué';
+const HEADING_SELECTOR = 'h1, h2, h3, h4, h5, h6';
 
 const state = {
   headings: [],
@@ -114,6 +116,8 @@ let readingPositionTimer = 0;
 let readingPositionWarningShown = false;
 let readingPositionReady = false;
 let headingObserver = null;
+const visibleHeadingIds = new Set();
+let lastHandledHash = window.location.hash;
 
 /* ---------- Utilidades ---------- */
 
@@ -141,6 +145,80 @@ function showToast(message, tone = 'info', duration = 6500) {
     toast.classList.add('is-leaving');
     window.setTimeout(() => toast.remove(), motionQuery.matches ? 0 : 240);
   }, duration);
+}
+
+/* ---------- Enlaces internos y URL ---------- */
+
+function currentHashTarget() {
+  return parseHashTarget(window.location.hash);
+}
+
+function scrollToDocumentTarget(target, { smooth = false, focus = false } = {}) {
+  if (!target || !docContent.contains(target)) {
+    return false;
+  }
+
+  target.scrollIntoView({
+    behavior: smooth && !motionQuery.matches ? 'smooth' : 'auto',
+    block: 'start'
+  });
+
+  if (target.matches(HEADING_SELECTOR)) {
+    setActiveTocHeading(target.id);
+  }
+
+  if (focus) {
+    if (!target.hasAttribute('tabindex')) {
+      target.setAttribute('tabindex', '-1');
+    }
+
+    target.focus({ preventScroll: true });
+  }
+
+  return true;
+}
+
+function commitSectionHash(targetId) {
+  const nextTarget = String(targetId ?? '').trim();
+
+  if (currentHashTarget() === nextTarget) {
+    lastHandledHash = window.location.hash;
+    return;
+  }
+
+  const url = buildHash(nextTarget) || `${window.location.pathname}${window.location.search}`;
+
+  history.pushState(null, '', url);
+  lastHandledHash = window.location.hash;
+}
+
+function handleHashNavigation() {
+  if (window.location.hash === lastHandledHash) {
+    return;
+  }
+
+  lastHandledHash = window.location.hash;
+
+  const targetId = currentHashTarget();
+
+  if (!targetId) {
+    docPane.scrollTo({ top: 0, behavior: 'auto' });
+
+    if (state.headings.length) {
+      setActiveTocHeading(state.headings[0].id);
+    }
+
+    return;
+  }
+
+  const target = document.getElementById(targetId);
+
+  if (!target || !docContent.contains(target)) {
+    showToast('La sección del enlace ya no existe.', 'warning');
+    return;
+  }
+
+  scrollToDocumentTarget(target);
 }
 
 function updateTocLayout() {
@@ -418,13 +496,21 @@ function observeHeadings() {
     headingObserver.disconnect();
   }
 
-  headingObserver = new IntersectionObserver((entries) => {
-    const visibleHeadings = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+  visibleHeadingIds.clear();
 
-    if (visibleHeadings.length) {
-      setActiveTocHeading(visibleHeadings[0].target.id);
+  headingObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        visibleHeadingIds.add(entry.target.id);
+      } else {
+        visibleHeadingIds.delete(entry.target.id);
+      }
+    });
+
+    const activeHeading = state.headings.find((heading) => visibleHeadingIds.has(heading.id));
+
+    if (activeHeading) {
+      setActiveTocHeading(activeHeading.id);
     }
   }, {
     root: docPane,
@@ -643,11 +729,8 @@ tocList.addEventListener('click', (event) => {
 
   setActiveTocHeading(target.id);
   setTocOpen(false);
-  target.scrollIntoView({
-    behavior: motionQuery.matches ? 'auto' : 'smooth',
-    block: 'start'
-  });
-  target.focus({ preventScroll: true });
+  scrollToDocumentTarget(target, { smooth: true, focus: true });
+  commitSectionHash(target.id);
   announce(`Sección: ${target.textContent.trim().slice(0, 90)}`);
 });
 
@@ -780,16 +863,11 @@ docContent.addEventListener('click', (event) => {
 
   event.preventDefault();
 
-  let targetId = href.slice(1);
-
-  try {
-    targetId = decodeURIComponent(targetId);
-  } catch (error) {
-    targetId = href.slice(1);
-  }
+  const targetId = parseHashTarget(href);
 
   if (!targetId) {
     docPane.scrollTo({ top: 0, behavior: motionQuery.matches ? 'auto' : 'smooth' });
+    commitSectionHash('');
     return;
   }
 
@@ -801,12 +879,8 @@ docContent.addEventListener('click', (event) => {
     return;
   }
 
-  target.setAttribute('tabindex', '-1');
-  target.scrollIntoView({
-    behavior: motionQuery.matches ? 'auto' : 'smooth',
-    block: 'start'
-  });
-  target.focus({ preventScroll: true });
+  scrollToDocumentTarget(target, { smooth: true, focus: true });
+  commitSectionHash(target.id);
   announce(`Sección: ${target.textContent.trim().slice(0, 90) || targetId}`);
 });
 
@@ -1034,6 +1108,11 @@ function restoreReadingPosition() {
   const restore = () => {
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
+        if (currentHashTarget()) {
+          readingPositionReady = true;
+          return;
+        }
+
         const anchor = document.getElementById(saved.anchorId);
 
         if (!anchor || !docContent.contains(anchor)) {
@@ -1058,6 +1137,40 @@ function restoreReadingPosition() {
           showToast('Se retomó la lectura desde tu última posición.', 'info', 4000);
           announce('Se retomó la lectura desde tu última posición.');
         }
+      });
+    });
+  };
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(restore, restore);
+  } else {
+    restore();
+  }
+}
+
+function restoreHashPosition(targetId) {
+  const restore = () => {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (currentHashTarget() !== targetId) {
+          readingPositionReady = true;
+          return;
+        }
+
+        const target = document.getElementById(targetId);
+
+        if (!target || !docContent.contains(target)) {
+          const baseUrl = `${window.location.pathname}${window.location.search}`;
+
+          history.replaceState(null, '', baseUrl);
+          lastHandledHash = '';
+          showToast('La sección del enlace ya no existe.', 'warning');
+          restoreReadingPosition();
+          return;
+        }
+
+        scrollToDocumentTarget(target);
+        readingPositionReady = true;
       });
     });
   };
@@ -1575,6 +1688,8 @@ function updateConnectionNote() {
 
 window.addEventListener('online', updateConnectionNote);
 window.addEventListener('offline', updateConnectionNote);
+window.addEventListener('hashchange', handleHashNavigation);
+window.addEventListener('popstate', handleHashNavigation);
 
 /* ---------- Eventos de la interfaz ---------- */
 
@@ -1584,13 +1699,24 @@ fontIncrease.addEventListener('click', () => changeFontSize(FONT_STEP));
 
 /* ---------- Arranque ---------- */
 
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
 applyFontSize(state.prefs.fontSize);
 syncThemeButton();
 showReader(prepareDocument(docContent).headings, { focus: false });
 loadVideoAnalyses();
 docPane.addEventListener('scroll', scheduleReadingPositionSave, { passive: true });
 window.addEventListener('pagehide', flushReadingPosition);
-restoreReadingPosition();
+
+const initialHashTarget = currentHashTarget();
+
+if (initialHashTarget) {
+  restoreHashPosition(initialHashTarget);
+} else {
+  restoreReadingPosition();
+}
 
 window.requestAnimationFrame(() => {
   window.requestAnimationFrame(() => {

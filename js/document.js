@@ -1,3 +1,4 @@
+import { parseHashTarget } from './hash.js';
 import { parseMediaUrl, parseMediaTimeLabel } from './links.js';
 
 const HEADINGS = 'h1, h2, h3, h4, h5, h6';
@@ -187,14 +188,7 @@ function prepareLinks(container) {
     }
 
     if (raw.startsWith('#')) {
-      let targetId = raw.slice(1);
-
-      try {
-        targetId = decodeURIComponent(targetId);
-      } catch (error) {
-        // Keep malformed fragments unchanged so they can be marked as broken.
-      }
-
+      const targetId = parseHashTarget(raw);
       const target = document.getElementById(targetId);
 
       if (!target || !container.contains(target)) {
