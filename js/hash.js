@@ -12,7 +12,7 @@ export function parseHashTarget(value) {
 
   try {
     return decodeURIComponent(raw);
-  } catch (error) {
+  } catch {
     return raw;
   }
 }

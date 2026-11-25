@@ -17,13 +17,14 @@ Lector web del Trabajo Final de Grado «El cuándo de mi por qué. La revitaliza
 
 ## Ejecución local
 
-Los módulos JavaScript necesitan un servidor estático; no abras `index.html` directamente con `file://`.
+Requiere Node.js 22 o posterior. Los módulos JavaScript necesitan un servidor estático; no abras `index.html` directamente con `file://`.
 
 ```powershell
-python -m http.server 8080
+npm install
+npm run serve
 ```
 
-Abre <http://localhost:8080>.
+Abre <http://127.0.0.1:8080>. El servidor escucha en `127.0.0.1:8080`; puedes cambiarlo con las variables `HOST` y `PORT`. También sirve cualquier servidor estático.
 
 Para editar el contenido del TFG, modifica las secciones de `index.html`. Las fuentes y sus licencias están en `assets/fonts/`.
 
@@ -43,17 +44,27 @@ python scripts/update_image_tags.py
 
 No edites a mano esas etiquetas si vas a regenerar las imágenes: vuelve a ejecutar ambos scripts después de cambiar un original. `js/document.js` respeta los atributos ya presentes en el HTML y solo completa los que falten.
 
-## Pruebas
+## Calidad
 
 ```powershell
 npm test
+npm run lint
+npm run audit
+npm run check
 ```
 
-Las pruebas actuales cubren el reconocimiento de enlaces multimedia, los enlaces internos por fragmento y las preferencias de lectura.
+`npm test` ejecuta las pruebas de enlaces multimedia, enlaces internos, preferencias, preparación del DOM y esquema de `video-analyses.json`. `npm run lint` analiza JavaScript con ESLint; `npm run audit` comprueba encabezados, IDs, referencias ARIA, imágenes, enlaces y archivos locales de `index.html`. `npm run check` encadena las tres tareas.
+
+La integración continua de `.github/workflows/ci.yml` ejecuta `npm ci`, las pruebas, el lint y la auditoría en cada push a `main` y en cada pull request.
 
 ## Estructura
 
 ```text
+├─ .github/workflows/ci.yml
+├─ .nvmrc
+├─ eslint.config.js
+├─ package.json
+├─ package-lock.json
 ├─ index.html
 ├─ video-analyses.json
 ├─ css/app.css
@@ -63,7 +74,8 @@ Las pruebas actuales cubren el reconocimiento de enlaces multimedia, los enlaces
 │  ├─ hash.js
 │  ├─ links.js
 │  ├─ storage.js
-│  └─ theme-init.js
+│  ├─ theme-init.js
+│  └─ video-analyses.js
 ├─ assets/
 │  ├─ favicon.svg
 │  ├─ fonts/
@@ -73,16 +85,21 @@ Las pruebas actuales cubren el reconocimiento de enlaces multimedia, los enlaces
 │  ├─ propuesta-textos-alt.md # propuesta de accesibilidad, no se publica
 │  └─ images/                 # originales y manifest.json
 ├─ scripts/
+│  ├─ audit-html.mjs
 │  ├─ optimize_images.py
+│  ├─ serve.mjs
 │  └─ update_image_tags.py
 └─ tests/
+   ├─ helpers/dom.mjs
+   ├─ document.test.mjs
    ├─ hash.test.mjs
    ├─ links.test.mjs
-   └─ storage.test.mjs
+   ├─ storage.test.mjs
+   └─ video-analyses.test.mjs
 ```
 
 ## Publicación
 
-Publica solo `index.html`, `css/`, `js/`, `video-analyses.json` y los archivos necesarios de `assets/` (`favicon.svg`, `fonts/` e `images/`). No es necesario desplegar `sources/`, `scripts/`, `tests/`, `package.json`, `README.md` ni `Panorama y plan de mejora.md`.
+Publica solo `index.html`, `css/`, `js/`, `video-analyses.json` y los archivos necesarios de `assets/` (`favicon.svg`, `fonts/` e `images/`). No es necesario desplegar `sources/`, `scripts/`, `tests/`, `package.json`, `package-lock.json`, `eslint.config.js`, `.github/`, `README.md` ni `Panorama y plan de mejora.md`.
 
 Conviene servir el HTML con `no-cache`, los archivos con hash o nombres estables con caché larga, y activar compresión Brotli o gzip para HTML, CSS, JavaScript, JSON y SVG.

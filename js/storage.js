@@ -18,7 +18,7 @@ function readRawPrefs() {
     const parsed = raw ? JSON.parse(raw) : null;
 
     return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
-  } catch (error) {
+  } catch {
     return {};
   }
 }
@@ -60,7 +60,7 @@ export function writePrefs(patch) {
 
   try {
     window.localStorage.setItem(PREFS_KEY, JSON.stringify(next));
-  } catch (error) {
+  } catch {
     // Cuota, modo privado o almacenamiento bloqueado: no se interrumpe la lectura.
   }
 
@@ -88,7 +88,7 @@ export function readReadingPosition() {
     const raw = window.localStorage.getItem(READING_POSITION_KEY);
 
     return raw ? normalizeReadingPosition(JSON.parse(raw)) : null;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -103,7 +103,7 @@ export function writeReadingPosition(position) {
   try {
     window.localStorage.setItem(READING_POSITION_KEY, JSON.stringify(normalized));
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -112,7 +112,7 @@ export function clearReadingPosition() {
   try {
     window.localStorage.removeItem(READING_POSITION_KEY);
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

@@ -48,6 +48,7 @@ function enhanceExternalLink(link, url) {
 
 function enhanceMediaLink(link, media) {
   link.href = media.href;
+  link.rel = 'noopener noreferrer';
   link.dataset.media = '';
   link.dataset.provider = media.provider;
   link.dataset.type = media.type;
@@ -202,7 +203,7 @@ function prepareLinks(container) {
 
     try {
       url = new URL(raw, document.baseURI);
-    } catch (error) {
+    } catch {
       blockLink(link);
       continue;
     }

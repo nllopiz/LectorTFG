@@ -11,7 +11,7 @@
     } else if (saved === 'system' && window.matchMedia) {
       theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-  } catch (error) {
+  } catch {
     theme = 'dark';
   }
 

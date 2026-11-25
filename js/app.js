@@ -5,6 +5,7 @@
 
 import { prepareDocument } from './document.js';
 import { buildHash, parseHashTarget } from './hash.js';
+import { getVideoAnalysis, isVideoAnalysesData } from './video-analyses.js';
 
 import {
   FONT_MAX,
@@ -574,36 +575,6 @@ function closeNavigationDialog(dialog) {
   }
 }
 
-function isVideoAnalysesData(value) {
-  return value !== null &&
-    typeof value === 'object' &&
-    !Array.isArray(value) &&
-    Object.values(value).every((analysis) =>
-      analysis !== null &&
-      typeof analysis === 'object' &&
-      Array.isArray(analysis.paragraphs) &&
-      analysis.paragraphs.length > 0 &&
-      analysis.paragraphs.every((paragraph) =>
-        typeof paragraph === 'string' && paragraph.trim().length > 0
-      )
-    );
-}
-
-function getVideoAnalysis(media) {
-  if (
-    !videoAnalyses ||
-    !media ||
-    media.provider !== 'youtube' ||
-    media.type !== 'video'
-  ) {
-    return null;
-  }
-
-  return Object.prototype.hasOwnProperty.call(videoAnalyses, media.id)
-    ? videoAnalyses[media.id]
-    : null;
-}
-
 function renderVideoAnalysis(analysis) {
   const paragraphs = analysis.paragraphs.map((text) => {
     const paragraph = document.createElement('p');
@@ -654,7 +625,7 @@ async function loadVideoAnalyses() {
 }
 
 function updateMediaAnalysisAvailability() {
-  const canShowAnalysis = getVideoAnalysis(activeMedia) !== null;
+  const canShowAnalysis = getVideoAnalysis(videoAnalyses, activeMedia) !== null;
   mediaAnalysisTrigger.hidden = !canShowAnalysis;
 }
 
@@ -665,7 +636,7 @@ tocClose.addEventListener('click', () => setTocOpen(false, { restoreFocus: true 
 tocBackdrop.addEventListener('click', () => setTocOpen(false, { restoreFocus: true }));
 mediaButton.addEventListener('click', () => openNavigationDialog(mediaDialog));
 mediaAnalysisTrigger.addEventListener('click', () => {
-  const analysis = getVideoAnalysis(activeMedia);
+  const analysis = getVideoAnalysis(videoAnalyses, activeMedia);
 
   if (!analysis) {
     return;
@@ -1229,7 +1200,7 @@ function isAllowedEmbed(url, provider) {
     }
 
     return false;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -1252,7 +1223,7 @@ function safeExternalUrl(url) {
     ]);
 
     return allowedHosts.has(parsed.hostname) ? parsed.href : null;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

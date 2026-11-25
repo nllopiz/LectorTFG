@@ -62,7 +62,7 @@ export function parseYouTubeUrl(value) {
 
   try {
     url = new URL(String(value), 'https://webmili.local/');
-  } catch (error) {
+  } catch {
     return null;
   }
 
@@ -128,7 +128,7 @@ export function parseSpotifyUrl(value) {
 
   try {
     url = new URL(String(value), 'https://webmili.local/');
-  } catch (error) {
+  } catch {
     return null;
   }
 

@@ -2,15 +2,16 @@
 
 Actualizado: 25 de noviembre de 2026.
 
-Estado: fase 1 aplicada en el árbol de trabajo; fases 2 a 4 pendientes.
+Estado: fases 1 y 2 aplicadas en el árbol de trabajo; fases 3 y 4 pendientes.
 
 ## Estado actual
 
 - El proyecto sigue siendo estático, sin build, y el contenido se puede leer aunque falle JavaScript.
-- Las 16 pruebas pasan con `npm test`.
+- Las 31 pruebas pasan con `npm test`.
+- `npm run lint` y `npm run audit` pasan sin errores; la auditoría deja una advertencia por la tabla sin `caption`.
 - `assets/images/` contiene 78 archivos WebP y pesa 2,5 MB; los originales están en `sources/images/`.
 - La CSP y los estilos de impresión ya están integrados.
-- El repositorio está en GitHub (`nllopiz/LectorTFG`), rama `main`, sin CI todavía.
+- El repositorio está en GitHub (`nllopiz/LectorTFG`), rama `main`. La CI está configurada en `.github/workflows/ci.yml`; falta comprobarla en el primer push.
 
 ## Lo que ya está resuelto
 
@@ -27,18 +28,23 @@ Estado: fase 1 aplicada en el árbol de trabajo; fases 2 a 4 pendientes.
 | Seguridad | CSP restrictiva por `<meta>`, `referrer` estricto y `allowfullscreen` en los iframes. | `index.html`, `js/app.js` |
 | Impresión | `@media print` oculta la interfaz, pasa el documento a blanco y negro y evita cortes en figuras y tablas. | `css/app.css` |
 | Metadatos | Título, descripción y `DOCUMENT_NAME` usan el título real del TFG. | `index.html`, `js/app.js` |
-| README | Título, estructura, publicación y flujo de imágenes actualizados. | `README.md` |
+| README | Título, estructura, publicación, calidad y flujo de imágenes actualizados. | `README.md` |
+| Pruebas del DOM | 11 pruebas con `linkedom` para encabezados, protocolos, enlaces internos, multimedia, tablas e imágenes. | `tests/document.test.mjs`, `tests/helpers/dom.mjs` |
+| Datos de análisis | Validación del esquema, claves de YouTube y correspondencia con `index.html`; la lógica se extrajo a un módulo puro. | `js/video-analyses.js`, `tests/video-analyses.test.mjs` |
+| Lint | ESLint 10 con configuración plana, globals de navegador y Node, y `npm run lint`. | `eslint.config.js`, `package.json` |
+| Auditoría HTML | Comprueba encabezados, IDs, ARIA, imágenes, enlaces, archivos locales, CSP y estructura de tablas y medios. | `scripts/audit-html.mjs` |
+| Servidor local | Servidor con `node:http`, MIME, cabeceras de seguridad, protección de rutas y soporte de `GET`/`HEAD`. | `scripts/serve.mjs` |
+| CI | `npm ci`, pruebas, lint y auditoría en cada push a `main` y pull request. | `.github/workflows/ci.yml` |
+| Seguridad de enlaces | Se agregó `rel="noopener noreferrer"` al enlace de YouTube que faltaba y a los enlaces multimedia generados. | `index.html`, `js/document.js` |
 
 ## Pendiente priorizado
 
 | Prioridad | Tema | Impacto | Esfuerzo |
 | --- | --- | --- | --- |
-| 1 | Aplicar los textos alternativos propuestos y agregar la alternativa textual de los gráficos. | Alto | 2–3 h |
-| 2 | Pruebas de `js/document.js` y validación de `video-analyses.json`. | Alto | 2–3 h |
-| 3 | Auditoría HTML, ESLint y CI. | Medio-alto | 3–4 h |
-| 4 | Servidor local, build de publicación y headers del hosting. | Medio | 2–3 h |
-| 5 | Normalizar las 3.183 entidades HTML a UTF-8 literal. | Bajo-medio | 1–2 h |
-| 6 | Opcionales: barra de progreso, offline/PWA, `figcaption` en todas las figuras. | Bajo | variable |
+| 1 | Aplicar los textos alternativos propuestos, la alternativa textual de los gráficos y el `caption` de la tabla. | Alto | 2–3 h |
+| 2 | Build de publicación y headers del hosting. | Medio | 2–3 h |
+| 3 | Normalizar las 3.183 entidades HTML a UTF-8 literal. | Bajo-medio | 1–2 h |
+| 4 | Opcionales: barra de progreso, offline/PWA y `figcaption` en todas las figuras. | Bajo | variable |
 
 ## Plan por fases
 
@@ -57,28 +63,24 @@ Estado: fase 1 aplicada en el árbol de trabajo; fases 2 a 4 pendientes.
 
 **Criterio de aceptación:** `npm test` en verde, la aplicación funciona con la CSP y la impresión no muestra la interfaz de lectura.
 
-### Fase 2 — Calidad y automatización
+### Fase 2 — Calidad y automatización (aplicada)
 
-1. Agregar `linkedom`, `eslint`, `@eslint/js` y `globals` como dependencias de desarrollo; generar `package-lock.json`.
-2. Pruebas de `js/document.js`:
-   - protocolos permitidos y bloqueados;
-   - enlaces internos válidos y rotos;
-   - generación de IDs, acentos, colisiones e IDs reservados;
-   - tablas, imágenes y enlaces multimedia;
-   - rechazo de contenedores que no son `HTMLElement`.
-3. Prueba de `video-analyses.json`: esquema, IDs válidos y correspondencia con enlaces reales de `index.html`.
-4. Auditoría HTML (`scripts/audit-html.mjs`): encabezados vacíos, IDs duplicados, referencias ARIA rotas, imágenes sin `alt`/dimensiones, archivos inexistentes y enlaces internos sin destino.
-5. ESLint con configuración plana; `npm run lint`.
-6. Servidor local `scripts/serve.mjs` con `node:http`; `npm run serve`.
-7. CI en `.github/workflows/ci.yml` con `npm ci`, `npm test`, `npm run lint` y `npm run audit`.
-8. Opcional: smoke test con Playwright para índice, medios, Escape y restauración de posición.
+- [x] Agregar `linkedom`, `eslint`, `@eslint/js` y `globals` como dependencias de desarrollo; generar `package-lock.json`.
+- [x] Pruebas de `js/document.js`: protocolos permitidos y bloqueados, enlaces internos, generación de IDs, tablas, imágenes, multimedia y rechazo de contenedores que no son `HTMLElement`.
+- [x] Extraer la validación de `video-analyses.json` a `js/video-analyses.js` y probar esquema, IDs y correspondencia con `index.html`.
+- [x] Auditoría HTML con encabezados, IDs duplicados, ARIA, imágenes, archivos locales, enlaces, CSP y estructura.
+- [x] ESLint con configuración plana y `npm run lint`.
+- [x] Servidor local `scripts/serve.mjs` con `node:http` y `npm run serve`.
+- [x] CI en `.github/workflows/ci.yml` con `npm ci`, `npm test`, `npm run lint` y `npm run audit`.
+- [ ] Opcional: smoke test con Playwright para índice, medios, Escape y restauración de posición.
 
-**Criterio de aceptación:** las pruebas, el lint y la auditoría pasan en CI en cada push y pull request.
+**Criterio de aceptación:** `npm run check` pasa en local; la CI ejecuta las mismas comprobaciones en cada push y pull request.
 
 ### Fase 3 — Contenido y pulido
 
 - Aplicar los `alt` aprobados de `sources/propuesta-textos-alt.md`.
 - Agregar un `<details>` con tabla de datos después de cada gráfico.
+- Agregar un `<caption>` a la tabla para reemplazar el nombre accesible genérico «Tabla 1».
 - Revisar las etiquetas de la lista de medios: los enlaces de «Material audiovisual complementario» se muestran como URL; conviene usar el texto de la entrada como etiqueta o excluirlos de la lista.
 - Normalizar las entidades HTML a UTF-8 literal, dejando intactos `&amp;`, `&lt;`, `&gt;`, `&quot;` y `&nbsp;`; revisar el diff.
 - Opcional: barra de progreso de lectura, offline/PWA y `figcaption` en todas las figuras.
@@ -90,7 +92,7 @@ Estado: fase 1 aplicada en el árbol de trabajo; fases 2 a 4 pendientes.
 - Script `npm run build` que copie solo lo necesario a `dist/`: `index.html`, `css/`, `js/`, `assets/favicon.svg`, `assets/fonts/`, `assets/images/` y `video-analyses.json`.
 - Headers del hosting: CSP como header si es posible, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, caché larga para imágenes y fuentes, `no-cache` para HTML.
 - Verificar la CSP en el entorno real y documentar sus límites si se publica en GitHub Pages.
-- Confirmar que no se despliegan `sources/`, `scripts/`, `tests/`, `package.json`, `README.md` ni `Panorama y plan de mejora.md`.
+- Confirmar que no se despliegan `sources/`, `scripts/`, `tests/`, `package.json`, `package-lock.json`, `eslint.config.js`, `.github/`, `README.md` ni `Panorama y plan de mejora.md`.
 
 ## Decisiones tomadas
 
@@ -101,8 +103,11 @@ Estado: fase 1 aplicada en el árbol de trabajo; fases 2 a 4 pendientes.
 
 ## Notas técnicas
 
-- La CSP por `<meta>` no admite `frame-ancestors` ni `report-uri`; si el hosting permite headers, conviene moverla allí.
+- La CSP por `<meta>` no admite `frame-ancestors` ni `report-uri`; el servidor local ya envía una cabecera CSP completa y el hosting debería hacer lo mismo.
 - Las claves `webmili:prefs:v1` y `webmili:reading-position:v1` se conservan para no perder preferencias ni posiciones guardadas.
-- `video-analyses.json` tiene 15 análisis y todas sus claves corresponden a enlaces de YouTube presentes en el documento; los videos sin análisis son una decisión editorial.
+- `video-analyses.json` tiene 15 análisis y todas sus claves corresponden a enlaces de YouTube presentes en el documento; los videos sin análisis son una decisión editorial. La validación compartida vive en `js/video-analyses.js`.
+- `linkedom`, ESLint y `globals` son dependencias de desarrollo; no se publican ni afectan al lector.
+- La auditoría recorre el DOM con el mismo `prepareDocument` que usa el navegador, por lo que valida también los IDs generados en tiempo de ejecución.
+- La tabla del documento no tiene `caption`; la auditoría lo informa como advertencia y queda pendiente para la fase 3.
 - Quedan 3.183 entidades HTML; no rompen nada, pero dificultan la edición.
 - Los tres gráficos tienen `alt` incorrectos en el HTML actual; la propuesta incluye los textos corregidos y los datos principales.
