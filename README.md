@@ -1,4 +1,4 @@
-# WebMili · Lector TFG
+# El cuándo de mi por qué · Lector TFG
 
 Lector web del Trabajo Final de Grado «El cuándo de mi por qué. La revitalización del folklore argentino en la era del Tecnoceno». El documento está incluido en `index.html` y se muestra al abrir la aplicación; no hay carga de archivos ni cuentas.
 
@@ -12,6 +12,8 @@ Lector web del Trabajo Final de Grado «El cuándo de mi por qué. La revitaliza
 - Direcciones compartibles por sección (`#chapter-2-title`) y navegación con Atrás/Adelante del navegador.
 - Imágenes en WebP con variantes responsive, dimensiones declaradas y carga diferida para evitar saltos de maquetación.
 - Navegación por teclado, foco visible de alto contraste y soporte para movimiento reducido.
+- Política de seguridad de contenido (CSP) restrictiva y reproducción externa limitada a YouTube y Spotify.
+- Estilos de impresión para guardar el documento en PDF sin la interfaz de lectura.
 
 ## Ejecución local
 
@@ -67,7 +69,9 @@ Las pruebas actuales cubren el reconocimiento de enlaces multimedia, los enlaces
 │  ├─ fonts/
 │  └─ images/          # WebP publicados
 ├─ sources/
-│  └─ images/          # originales y manifest.json
+│  ├─ AnalisisVideos.md       # material de trabajo, no se publica
+│  ├─ propuesta-textos-alt.md # propuesta de accesibilidad, no se publica
+│  └─ images/                 # originales y manifest.json
 ├─ scripts/
 │  ├─ optimize_images.py
 │  └─ update_image_tags.py
@@ -79,6 +83,6 @@ Las pruebas actuales cubren el reconocimiento de enlaces multimedia, los enlaces
 
 ## Publicación
 
-Publica solo `index.html`, `css/`, `js/`, `video-analyses.json` y los archivos necesarios de `assets/` (`favicon.svg`, `fonts/` e `images/`). No es necesario desplegar `sources/`, `scripts/`, `tests/`, `package.json`, `README.md` ni el material de trabajo `AnalisisVideos.md`.
+Publica solo `index.html`, `css/`, `js/`, `video-analyses.json` y los archivos necesarios de `assets/` (`favicon.svg`, `fonts/` e `images/`). No es necesario desplegar `sources/`, `scripts/`, `tests/`, `package.json`, `README.md` ni `Panorama y plan de mejora.md`.
 
 Conviene servir el HTML con `no-cache`, los archivos con hash o nombres estables con caché larga, y activar compresión Brotli o gzip para HTML, CSS, JavaScript, JSON y SVG.

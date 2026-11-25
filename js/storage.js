@@ -1,5 +1,5 @@
 /**
- * Preferencias locales de WebMili.
+ * Preferencias locales del lector.
  * Se guardan tema, tamaño de texto y posición de lectura; el contenido nunca se almacena.
  */
 

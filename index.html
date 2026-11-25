@@ -3,6 +3,8 @@
 
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://www.youtube.com https://open.spotify.com; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#4E381E">
@@ -3667,7 +3669,7 @@
       <button class="dialog-close" type="button" data-close-dialog="media-dialog"
         aria-label="Cerrar lista de medios">Cerrar</button>
     </div>
-    <div class="media-list" id="media-list" aria-label="Lista de medios"></div>
+    <ul class="media-list" id="media-list" aria-label="Lista de medios"></ul>
   </dialog>
 
   <dialog class="media-analysis-dialog" id="media-analysis-dialog" aria-labelledby="media-analysis-title">

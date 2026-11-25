@@ -443,7 +443,7 @@ function renderMediaList() {
   mediaList.replaceChildren();
 
   if (!state.media.length) {
-    const empty = document.createElement('p');
+    const empty = document.createElement('li');
     empty.className = 'navigation-empty';
     empty.textContent = 'Este documento no contiene enlaces de YouTube o Spotify.';
     mediaList.append(empty);
@@ -451,6 +451,7 @@ function renderMediaList() {
   }
 
   state.media.forEach((media, index) => {
+    const listItem = document.createElement('li');
     const item = document.createElement('button');
     item.type = 'button';
     item.className = 'media-list-item';
@@ -473,7 +474,8 @@ function renderMediaList() {
 
     copy.append(label, type);
     item.append(provider, copy);
-    mediaList.append(item);
+    listItem.append(item);
+    mediaList.append(listItem);
   });
 }
 
@@ -1346,6 +1348,7 @@ function createIframe(media) {
   iframe.src = media.embedUrl;
   iframe.title = `${provider.frameTitle}: ${media.label}`;
   iframe.allow = provider.allow;
+  iframe.allowFullscreen = true;
   iframe.referrerPolicy = 'strict-origin-when-cross-origin';
   iframe.loading = 'eager';
 
