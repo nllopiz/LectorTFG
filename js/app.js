@@ -662,7 +662,7 @@ mediaAnalysisTrigger.addEventListener('click', () => {
 
   updateMediaAnalysisDialogPosition();
   renderVideoAnalysis(analysis);
-  mediaAnalysisTitle.textContent = `Análisis de la canción: ${activeMedia.label}`;
+  mediaAnalysisTitle.innerHTML = 'Análisis de la canción:<br>' + activeMedia.label;
   openNavigationDialog(mediaAnalysisDialog);
 });
 desktopQuery.addEventListener('change', updateTocLayout);
