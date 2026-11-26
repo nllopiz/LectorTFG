@@ -1333,12 +1333,12 @@ function transitionDuration(opening) {
 }
 
 function stageHeightFor(media, availableWidth) {
-  if (media.provider === 'youtube') {
+  if (media.provider === "youtube") {
     return Math.round((availableWidth * 9) / 16);
   }
 
-  if (media.provider === 'instagram') {
-    return 700;
+  if (media.provider === "instagram") {
+    return window.matchMedia("(max-width: 768px)").matches ? 550 : 700;
   }
 
   return media.height || 352;
@@ -1375,7 +1375,10 @@ function updateMediaSize() {
     return;
   }
 
-  const maxPanelHeight = Math.round(workspace.clientHeight * 0.55);
+  const maxPanelHeight =
+    activeMedia.provider === "instagram"
+      ? workspace.clientHeight
+      : Math.round(workspace.clientHeight * 0.55);
   const analysisTriggerHeight = mediaAnalysisTrigger.hidden
     ? 0
     : mediaAnalysisTrigger.getBoundingClientRect().height +
@@ -1490,21 +1493,20 @@ function loadInstagramScript() {
   return instagramScriptPromise;
 }
 
-
 function createInstagramEmbed(media) {
   const token = instagramRenderToken;
 
-  const blockquote = document.createElement('blockquote');
-  blockquote.className = 'instagram-media';
-  blockquote.setAttribute('data-instgrm-permalink', media.href);
-  blockquote.setAttribute('data-instgrm-version', '14');
+  const blockquote = document.createElement("blockquote");
+  blockquote.className = "instagram-media";
+  blockquote.setAttribute("data-instgrm-permalink", media.href);
+  blockquote.setAttribute("data-instgrm-version", "14");
 
-  const link = document.createElement('a');
+  const link = document.createElement("a");
 
   link.href = media.href;
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
-  link.textContent = 'Ver publicación en Instagram';
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = "Ver publicación en Instagram";
 
   blockquote.append(link);
 
@@ -1519,9 +1521,7 @@ function createInstagramEmbed(media) {
       return;
     }
 
-    const iframe = mediaStage.querySelector(
-      'iframe.instagram-media-rendered'
-    );
+    const iframe = mediaStage.querySelector("iframe.instagram-media-rendered");
 
     if (!iframe) {
       return;
@@ -1530,8 +1530,8 @@ function createInstagramEmbed(media) {
     window.clearTimeout(loadTimer);
     loadTimer = 0;
 
-    mediaStage.classList.add('is-ready');
-    mediaStage.setAttribute('aria-busy', 'false');
+    mediaStage.classList.add("is-ready");
+    mediaStage.setAttribute("aria-busy", "false");
 
     if (instagramObserver) {
       instagramObserver.disconnect();
@@ -1572,7 +1572,7 @@ function createInstagramEmbed(media) {
 
       instagramObserver = new MutationObserver(() => {
         const iframe = mediaStage.querySelector(
-          'iframe.instagram-media-rendered'
+          "iframe.instagram-media-rendered",
         );
 
         if (iframe) {
@@ -1582,7 +1582,7 @@ function createInstagramEmbed(media) {
 
       instagramObserver.observe(mediaStage, {
         childList: true,
-        subtree: true
+        subtree: true,
       });
 
       loadTimer = window.setTimeout(() => {
@@ -1593,12 +1593,12 @@ function createInstagramEmbed(media) {
           return;
         }
 
-        mediaStage.setAttribute('aria-busy', 'false');
+        mediaStage.setAttribute("aria-busy", "false");
       }, 12000);
 
       window.instgrm.Embeds.process();
 
-      if (mediaStage.querySelector('iframe.instagram-media-rendered')) {
+      if (mediaStage.querySelector("iframe.instagram-media-rendered")) {
         markReady();
       }
     })
@@ -1607,12 +1607,11 @@ function createInstagramEmbed(media) {
         return;
       }
 
-      console.error('Error al cargar el Reel de Instagram:', error);
-      mediaStage.setAttribute('aria-busy', 'false');
-      announce('No se pudo cargar el Reel de Instagram.');
+      console.error("Error al cargar el Reel de Instagram:", error);
+      mediaStage.setAttribute("aria-busy", "false");
+      announce("No se pudo cargar el Reel de Instagram.");
     });
 }
-
 
 function createIframe(media) {
   if (media.provider === "instagram") {
