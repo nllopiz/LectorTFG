@@ -109,6 +109,7 @@ const TYPE_LABELS = {
   episode: "Episodio de Spotify",
   show: "Programa de Spotify",
   artist: "Artista de Spotify",
+  reel: "Reel de Instagram",
 };
 
 let activeMedia = null;
@@ -133,8 +134,8 @@ let currentInstagramEmbed = null;
 let instagramRenderToken = 0;
 let instagramScriptPromise = null;
 let instagramObserver = null;
-let instagramResizeObserver = null;
-let instagramFrameHeight = null;
+//let instagramResizeObserver = null;
+//let instagramFrameHeight = null;
 /* ---------- Utilidades ---------- */
 
 function announce(message) {
@@ -487,9 +488,9 @@ function renderMediaList() {
     item.className = "media-list-item";
     item.dataset.mediaIndex = String(index);
 
-    const provider = document.createElement("span");
+    /*const provider = document.createElement("span");
     provider.className = `media-list-item__provider media-list-item__provider--${media.provider}`;
-    provider.textContent = PROVIDERS[media.provider].name;
+    provider.textContent = PROVIDERS[media.provider].name;*/
 
     const copy = document.createElement("span");
     copy.className = "media-list-item__copy";
@@ -503,7 +504,8 @@ function renderMediaList() {
     type.textContent = TYPE_LABELS[media.type] || media.type;
 
     copy.append(label, type);
-    item.append(provider, copy);
+    /*item.append(provider, copy);*/
+    item.append(copy);
     listItem.append(item);
     mediaList.append(listItem);
   });
@@ -1424,10 +1426,10 @@ function destroyIframe() {
     instagramObserver = null;
   }
 
-  if (instagramResizeObserver) {
+  /*if (instagramResizeObserver) {
     instagramResizeObserver.disconnect();
     instagramResizeObserver = null;
-  }
+  }*/
 
   if (currentIframe) {
     currentIframe.remove();
@@ -1538,11 +1540,11 @@ function createInstagramEmbed(media) {
       instagramObserver = null;
     }
 
-    if (instagramResizeObserver) {
+    /*if (instagramResizeObserver) {
       instagramResizeObserver.disconnect();
-    }
+    }*/
 
-    instagramResizeObserver = new ResizeObserver((entries) => {
+    /*instagramResizeObserver = new ResizeObserver((entries) => {
       if (
         token !== instagramRenderToken ||
         currentInstagramEmbed !== blockquote
@@ -1556,9 +1558,9 @@ function createInstagramEmbed(media) {
         instagramFrameHeight = height;
         updateMediaSize();
       }
-    });
+    });*/
 
-    instagramResizeObserver.observe(iframe);
+    /*instagramResizeObserver.observe(iframe);*/
   };
 
   loadInstagramScript()
@@ -1737,7 +1739,7 @@ function openMedia(media, trigger) {
       `${provider.externalLabel}: ${media.label}`,
     );
     mediaFallbackMessage.textContent =
-      "Espera unos segundos. Si no se reproduce aquí, puedes";
+      "Espera unos segundos mientras se carga el contenido."; // Si no se reproduce aquí, puedes";
     mediaFallbackPeriod.hidden = false;
   } else {
     mediaExternal.hidden = true;
@@ -1753,6 +1755,8 @@ function openMedia(media, trigger) {
     : "Sin conexión. El documento sigue disponible, pero los contenidos multimedia no se pueden cargar.";
 
   mediaStage.dataset.provider = media.provider;
+
+  mediaPanel.classList.toggle("is-instagram", media.provider === "instagram");
 
   mediaPanel.inert = false;
   mediaPanel.removeAttribute("inert");
@@ -1799,6 +1803,7 @@ function closeMedia() {
   mediaPanel.classList.add("is-closing");
   destroyIframe();
   mediaPanel.classList.remove("is-open");
+  mediaPanel.classList.remove("is-instagram");
   appContainer.classList.remove("has-open-media");
   workspace.classList.remove("has-open-media");
   hideTocTooltip();

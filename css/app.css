@@ -995,7 +995,7 @@ a {
   text-decoration-thickness: 2px;
 }
 
-.media-badge {
+/*.media-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -1014,7 +1014,7 @@ a {
 .media-badge--spotify {
   background: var(--spotify-soft);
   color: var(--spotify);
-}
+}*/
 
 /* ---------- Índice y lista de medios ---------- */
 
@@ -1186,9 +1186,8 @@ a {
 
 .media-list-item {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
-  gap: 10px;
   padding: 12px 10px;
   font-family: var(--font-ui);
 }
@@ -1221,11 +1220,14 @@ a {
 }
 
 .media-list-item__label {
+  display: -webkit-box;
   overflow: hidden;
   font-size: 0.82rem;
   font-weight: 700;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .media-list-item__type {
@@ -1665,6 +1667,10 @@ a {
     width: var(--media-w);
     height: auto;
     transition-duration: var(--dur-open);
+  }
+
+  .media-panel.is-instagram .media-foot {
+    display: none;
   }
 
   .media-panel__inner {

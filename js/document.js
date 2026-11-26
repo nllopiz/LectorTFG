@@ -1,117 +1,138 @@
-import { parseHashTarget } from './hash.js';
-import { parseMediaUrl, parseMediaTimeLabel } from './links.js';
+import { parseHashTarget } from "./hash.js";
+import { parseMediaUrl, parseMediaTimeLabel } from "./links.js";
 
-const HEADINGS = 'h1, h2, h3, h4, h5, h6';
-const SAFE_EXTERNAL = new Set(['http:', 'https:']);
-const SAFE_HANDLER = new Set(['mailto:', 'tel:']);
+const HEADINGS = "h1, h2, h3, h4, h5, h6";
+const SAFE_EXTERNAL = new Set(["http:", "https:"]);
+const SAFE_HANDLER = new Set(["mailto:", "tel:"]);
 
 function cleanText(value) {
-  return String(value ?? '').replace(/\s+/g, ' ').trim();
+  return String(value ?? "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function slugify(value) {
   return cleanText(value)
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
     .slice(0, 64);
 }
 
 function blockLink(link) {
-  link.removeAttribute('href');
-  link.removeAttribute('target');
-  link.removeAttribute('rel');
-  link.dataset.blockedLink = 'protocolo no permitido';
-  link.classList.add('doc-link--blocked');
-  link.setAttribute('title', 'Este enlace se bloqueó por seguridad.');
+  link.removeAttribute("href");
+  link.removeAttribute("target");
+  link.removeAttribute("rel");
+  link.dataset.blockedLink = "protocolo no permitido";
+  link.classList.add("doc-link--blocked");
+  link.setAttribute("title", "Este enlace se bloqueó por seguridad.");
 
-  const note = document.createElement('span');
-  note.className = 'sr-only';
-  note.textContent = ' (enlace bloqueado por seguridad)';
+  const note = document.createElement("span");
+  note.className = "sr-only";
+  note.textContent = " (enlace bloqueado por seguridad)";
   link.append(note);
 }
 
 function enhanceExternalLink(link, url) {
   link.href = url.href;
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
-  link.referrerPolicy = 'strict-origin-when-cross-origin';
-  link.classList.add('doc-link--external');
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.referrerPolicy = "strict-origin-when-cross-origin";
+  link.classList.add("doc-link--external");
 
-  const note = document.createElement('span');
-  note.className = 'sr-only';
-  note.textContent = ' (se abre en una pestaña nueva)';
+  const note = document.createElement("span");
+  note.className = "sr-only";
+  note.textContent = " (se abre en una pestaña nueva)";
   link.append(note);
 }
 
 function enhanceMediaLink(link, media) {
   link.href = media.href;
-  link.rel = 'noopener noreferrer';
-  link.dataset.media = '';
+  link.rel = "noopener noreferrer";
+  link.dataset.media = "";
   link.dataset.provider = media.provider;
   link.dataset.type = media.type;
   link.dataset.id = media.id;
   link.dataset.embed = media.embedUrl;
-  link.dataset.height = media.height ? String(media.height) : '';
-  link.dataset.start = media.start ? String(media.start) : '';
-  link.classList.add('media-link');
+  link.dataset.height = media.height ? String(media.height) : "";
+  link.dataset.start = media.start ? String(media.start) : "";
+  link.classList.add("media-link");
 
   const visibleText = cleanText(link.textContent);
-  const label = visibleText || (
-    media.provider === 'youtube'
-      ? (media.type === 'playlist' ? 'Lista de YouTube' : 'Video de YouTube')
-      : `${media.type.charAt(0).toUpperCase()}${media.type.slice(1)} de Spotify`
-  );
+  const isUrl = /^(https?:\/\/|www\.)/i.test(visibleText);
+
+  const bibliographyEntry = link.closest(".bibliography-entry");
+
+  const contextualTitle = bibliographyEntry
+    ? cleanText(
+        [...bibliographyEntry.childNodes]
+          .filter((node) => node !== link)
+          .map((node) => node.textContent)
+          .join(" "),
+      )
+    : "";
+
+  const defaultLabel =
+    media.provider === "youtube"
+      ? media.type === "playlist"
+        ? "Lista de YouTube"
+        : "Video de YouTube"
+      : `${media.type.charAt(0).toUpperCase()}${media.type.slice(1)} de Spotify`;
+
+  const label = (!isUrl && visibleText) || contextualTitle || defaultLabel;
+
   const timeLabel = parseMediaTimeLabel(media);
 
   link.dataset.label = timeLabel ? `${label} · ${timeLabel}` : label;
-  link.setAttribute('aria-expanded', 'false');
-  link.setAttribute('aria-controls', 'media-panel');
+  link.setAttribute("aria-expanded", "false");
+  link.setAttribute("aria-controls", "media-panel");
 
-  const text = document.createElement('span');
-  text.className = 'media-link__text';
-  text.textContent = visibleText || (
-    media.provider === 'youtube'
-      ? (media.type === 'playlist' ? 'Lista' : 'Video')
-      : ''
-  );
+  const text = document.createElement("span");
+  text.className = "media-link__text";
+  text.textContent = label;
 
-  if (media.provider === 'youtube') {
+  if (media.provider === "youtube") {
     link.replaceChildren(text);
     return;
   }
 
-  const badge = document.createElement('span');
+  const badge = document.createElement("span");
   badge.className = `media-badge media-badge--${media.provider}`;
-  badge.setAttribute('aria-hidden', 'true');
-  badge.textContent = 'Spotify';
+  badge.setAttribute("aria-hidden", "true");
+  badge.textContent = "Spotify";
 
-  link.replaceChildren(badge, document.createTextNode(' '), text);
+  link.replaceChildren(badge, document.createTextNode(" "), text);
 }
 
 function markBrokenAnchor(link) {
-  link.dataset.brokenAnchor = '';
-  link.classList.add('doc-link--broken');
-  link.setAttribute('title', 'El destino de este enlace no está en el documento.');
+  link.dataset.brokenAnchor = "";
+  link.classList.add("doc-link--broken");
+  link.setAttribute(
+    "title",
+    "El destino de este enlace no está en el documento.",
+  );
 }
 
 function wrapTables(container) {
-  const tables = Array.from(container.querySelectorAll('table'));
+  const tables = Array.from(container.querySelectorAll("table"));
 
   tables.forEach((table, index) => {
-    if (table.parentElement && table.parentElement.classList.contains('table-scroll')) {
+    if (
+      table.parentElement &&
+      table.parentElement.classList.contains("table-scroll")
+    ) {
       return;
     }
 
-    const wrapper = document.createElement('div');
-    wrapper.className = 'table-scroll';
+    const wrapper = document.createElement("div");
+    wrapper.className = "table-scroll";
     wrapper.tabIndex = 0;
-    wrapper.setAttribute('role', 'region');
+    wrapper.setAttribute("role", "region");
 
-    const caption = cleanText(table.querySelector('caption')?.textContent);
-    wrapper.setAttribute('aria-label', caption || `Tabla ${index + 1}`);
+    const caption = cleanText(table.querySelector("caption")?.textContent);
+    wrapper.setAttribute("aria-label", caption || `Tabla ${index + 1}`);
 
     table.before(wrapper);
     wrapper.append(table);
@@ -119,17 +140,17 @@ function wrapTables(container) {
 }
 
 function prepareImages(container) {
-  for (const img of Array.from(container.querySelectorAll('img'))) {
-    if (!img.hasAttribute('loading')) {
-      img.setAttribute('loading', 'lazy');
+  for (const img of Array.from(container.querySelectorAll("img"))) {
+    if (!img.hasAttribute("loading")) {
+      img.setAttribute("loading", "lazy");
     }
 
-    if (!img.hasAttribute('decoding')) {
-      img.setAttribute('decoding', 'async');
+    if (!img.hasAttribute("decoding")) {
+      img.setAttribute("decoding", "async");
     }
 
-    if (!img.hasAttribute('alt')) {
-      img.setAttribute('alt', '');
+    if (!img.hasAttribute("alt")) {
+      img.setAttribute("alt", "");
     }
   }
 }
@@ -138,7 +159,7 @@ function prepareHeadings(container) {
   const usedIds = new Set();
   const reserved = new Set();
 
-  container.querySelectorAll('[id]').forEach((element) => {
+  container.querySelectorAll("[id]").forEach((element) => {
     if (!element.matches(HEADINGS) && element.id) {
       reserved.add(element.id);
     }
@@ -148,10 +169,11 @@ function prepareHeadings(container) {
 
   for (const heading of container.querySelectorAll(HEADINGS)) {
     const text = cleanText(heading.textContent);
-    let candidate = heading.getAttribute('id')?.trim() || slugify(text) || 'seccion';
+    let candidate =
+      heading.getAttribute("id")?.trim() || slugify(text) || "seccion";
 
     if (!/^[A-Za-z][A-Za-z0-9_.:-]*$/.test(candidate)) {
-      candidate = slugify(candidate) || 'seccion';
+      candidate = slugify(candidate) || "seccion";
     }
 
     let id = candidate;
@@ -163,13 +185,13 @@ function prepareHeadings(container) {
     }
 
     heading.id = id;
-    heading.setAttribute('tabindex', '-1');
+    heading.setAttribute("tabindex", "-1");
     usedIds.add(id);
 
     headings.push({
       id,
       text,
-      level: Number(heading.tagName.charAt(1))
+      level: Number(heading.tagName.charAt(1)),
     });
   }
 
@@ -177,8 +199,8 @@ function prepareHeadings(container) {
 }
 
 function prepareLinks(container) {
-  for (const link of Array.from(container.querySelectorAll('a'))) {
-    const raw = (link.getAttribute('href') || '').trim();
+  for (const link of Array.from(container.querySelectorAll("a"))) {
+    const raw = (link.getAttribute("href") || "").trim();
 
     if (!raw) {
       if (cleanText(link.textContent)) {
@@ -188,7 +210,7 @@ function prepareLinks(container) {
       continue;
     }
 
-    if (raw.startsWith('#')) {
+    if (raw.startsWith("#")) {
       const targetId = parseHashTarget(raw);
       const target = document.getElementById(targetId);
 
@@ -226,7 +248,7 @@ function prepareLinks(container) {
 
 export function prepareDocument(container) {
   if (!(container instanceof HTMLElement)) {
-    throw new TypeError('Se esperaba un contenedor HTML.');
+    throw new TypeError("Se esperaba un contenedor HTML.");
   }
 
   wrapTables(container);
