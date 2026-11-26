@@ -1340,8 +1340,22 @@ function stageHeightFor(media, availableWidth) {
   }
 
   if (media.provider === "instagram") {
-    return window.matchMedia("(max-width: 768px)").matches ? 550 : 700;
-  }
+  const viewportHeight =
+    window.visualViewport?.height || window.innerHeight;
+
+  const isMobile = window.matchMedia(
+    "(max-width: 768px)"
+  ).matches;
+
+  const ratio = isMobile ? 0.78 : 0.82;
+  const minHeight = isMobile ? 440 : 560;
+  const maxHeight = isMobile ? 650 : 820;
+
+  return Math.min(
+    maxHeight,
+    Math.max(minHeight, Math.round(viewportHeight * ratio))
+  );
+}
 
   return media.height || 352;
 }
