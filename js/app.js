@@ -575,14 +575,32 @@ function closeNavigationDialog(dialog) {
   }
 }
 
-function renderVideoAnalysis(analysis) {
-  const paragraphs = analysis.paragraphs.map((text) => {
-    const paragraph = document.createElement('p');
-    paragraph.textContent = text;
-    return paragraph;
-  });
+function createAnalysisParagraph(text) {
+  // El JSON usa *texto* para énfasis; se convierte en <em> sin interpretar HTML.
+  const paragraph = document.createElement('p');
+  const parts = text.split(/(\*[^*]+\*)/g);
 
-  mediaAnalysisContent.replaceChildren(...paragraphs);
+  for (const part of parts) {
+    if (!part) {
+      continue;
+    }
+
+    if (part.length > 2 && part.startsWith('*') && part.endsWith('*')) {
+      const emphasis = document.createElement('em');
+      emphasis.textContent = part.slice(1, -1);
+      paragraph.append(emphasis);
+    } else {
+      paragraph.append(part);
+    }
+  }
+
+  return paragraph;
+}
+
+function renderVideoAnalysis(analysis) {
+  mediaAnalysisContent.replaceChildren(
+    ...analysis.paragraphs.map(createAnalysisParagraph)
+  );
 }
 
 function updateMediaAnalysisDialogPosition() {
