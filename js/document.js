@@ -93,17 +93,25 @@ function enhanceMediaLink(link, media) {
   text.className = "media-link__text";
   text.textContent = label;
 
-  if (media.provider === "youtube") {
-    link.replaceChildren(text);
-    return;
-  }
-
+  if (media.provider === "spotify") {
   const badge = document.createElement("span");
-  badge.className = `media-badge media-badge--${media.provider}`;
+  badge.className = "media-badge media-badge--spotify";
   badge.setAttribute("aria-hidden", "true");
   badge.textContent = "Spotify";
 
   link.replaceChildren(badge, document.createTextNode(" "), text);
+  return;
+}
+
+link.replaceChildren(text);
+
+  /*const badge = document.createElement("span");
+  badge.className = `media-badge media-badge--${media.provider}`;
+  badge.setAttribute("aria-hidden", "true");
+  badge.textContent = "Spotify";
+
+  link.replaceChildren(badge, document.createTextNode(" "), text);*/
+  link.replaceChildren(text);
 }
 
 function markBrokenAnchor(link) {

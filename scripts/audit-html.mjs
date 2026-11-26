@@ -330,7 +330,7 @@ function checkMediaLinks(container) {
       fail(`${describe(link)}: enlace multimedia sin aria-expanded="false".`);
     }
 
-    if (!['youtube', 'spotify'].includes(link.dataset.provider)) {
+    if (!['youtube', 'instagram'].includes(link.dataset.provider)) {
       fail(`${describe(link)}: proveedor multimedia desconocido.`);
     }
 
