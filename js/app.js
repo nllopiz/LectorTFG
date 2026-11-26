@@ -1460,23 +1460,16 @@ function createInstagramEmbed(media) {
         }
       };
 
-      instagramObserver = new MutationObserver(() => {
-        if (blockquote.querySelector('iframe')) {
-          markReady();
-        }
-      });
+      instagramObserver.observe(mediaStage, {
+  childList: true,
+  subtree: true
+});
 
-      instagramObserver.observe(blockquote, {
-        childList: true,
-        subtree: true
-      });
+window.instgrm.Embeds.process();
 
-      window.instgrm.Embeds.process();
-
-      // Puede que Instagram haya insertado el iframe inmediatamente.
-      if (blockquote.querySelector('iframe')) {
-        markReady();
-      }
+if (mediaStage.querySelector('iframe.instagram-media-rendered')) {
+  markReady();
+}
 
       loadTimer = window.setTimeout(() => {
         if (
