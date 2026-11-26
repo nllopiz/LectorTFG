@@ -456,7 +456,7 @@ function renderMediaList() {
   if (!state.media.length) {
     const empty = document.createElement('li');
     empty.className = 'navigation-empty';
-    empty.textContent = 'Este documento no contiene enlaces de YouTube o Spotify.';
+    empty.textContent = 'Este documento no contiene enlaces multimedia compatibles.';
     mediaList.append(empty);
     return;
   }
@@ -470,7 +470,7 @@ function renderMediaList() {
 
     const provider = document.createElement('span');
     provider.className = `media-list-item__provider media-list-item__provider--${media.provider}`;
-    provider.textContent = media.provider === 'youtube' ? 'YouTube' : 'Spotify';
+    provider.textContent = PROVIDERS[media.provider].name;
 
     const copy = document.createElement('span');
     copy.className = 'media-list-item__copy';
@@ -1191,7 +1191,12 @@ function mediaFromLink(link) {
   const id = link.dataset.id;
   const embedUrl = link.dataset.embed;
 
-  if (!PROVIDERS[provider] || !type || !id || !embedUrl) {
+  if (
+    !PROVIDERS[provider] ||
+    !type ||
+    !id ||
+    (provider !== 'instagram' && !embedUrl)
+  ) {
     return null;
   }
 
@@ -1250,7 +1255,15 @@ function safeExternalUrl(url) {
       'open.spotify.com'
     ]);
 
-    return allowedHosts.has(parsed.hostname) ? parsed.href : null;
+    const isInstagramReel =
+      ['instagram.com', 'www.instagram.com'].includes(parsed.hostname) &&
+      /^\/reel\/[A-Za-z0-9_-]+\/?$/.test(parsed.pathname);
+
+    return allowedHosts.has(parsed.hostname) || isInstagramReel
+      ? parsed.href
+      : null;
+
+
   } catch {
     return null;
   }
@@ -1480,6 +1493,11 @@ function createInstagramEmbed(media) {
       if (mediaStage.querySelector('iframe.instagram-media-rendered')) {
         markReady();
       }
+      window.instgrm.Embeds.process();
+
+      if (mediaStage.querySelector('iframe.instagram-media-rendered')) {
+        markReady();
+      }
 
       loadTimer = window.setTimeout(() => {
         if (
@@ -1636,7 +1654,7 @@ function openMedia(media, trigger) {
   mediaNote.hidden = navigator.onLine;
   mediaNote.textContent = navigator.onLine
     ? ''
-    : 'Sin conexión. El documento sigue disponible, pero YouTube o Spotify no se pueden cargar.';
+    : 'Sin conexión. El documento sigue disponible, pero los contenidos multimedia no se pueden cargar.';
 
   mediaStage.dataset.provider = media.provider;
 
