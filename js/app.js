@@ -1460,16 +1460,26 @@ function createInstagramEmbed(media) {
         }
       };
 
+      instagramObserver = new MutationObserver(() => {
+        const iframe = mediaStage.querySelector(
+          'iframe.instagram-media-rendered'
+        );
+
+        if (iframe) {
+          markReady();
+        }
+      });
+
       instagramObserver.observe(mediaStage, {
-  childList: true,
-  subtree: true
-});
+        childList: true,
+        subtree: true
+      });
 
-window.instgrm.Embeds.process();
+      window.instgrm.Embeds.process();
 
-if (mediaStage.querySelector('iframe.instagram-media-rendered')) {
-  markReady();
-}
+      if (mediaStage.querySelector('iframe.instagram-media-rendered')) {
+        markReady();
+      }
 
       loadTimer = window.setTimeout(() => {
         if (
