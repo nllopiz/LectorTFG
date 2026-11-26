@@ -100,6 +100,13 @@ La integración continua de `.github/workflows/ci.yml` ejecuta `npm ci`, las pru
 
 ## Publicación
 
-Publica solo `index.html`, `css/`, `js/`, `video-analyses.json` y los archivos necesarios de `assets/` (`favicon.svg`, `fonts/` e `images/`). No es necesario desplegar `sources/`, `scripts/`, `tests/`, `package.json`, `package-lock.json`, `eslint.config.js`, `.github/`, `README.md` ni `Panorama y plan de mejora.md`.
+El sitio se publica en Netlify desde la carpeta `dist/`, que genera `npm run build`. El build copia solo lo necesario: `index.html`, `css/`, `js/`, `video-analyses.json`, `assets/` (`favicon.svg`, `fonts/` e `images/`) y `_headers`. Quedan fuera `sources/`, `scripts/`, `tests/`, `package.json`, `package-lock.json`, `eslint.config.js`, `.github/`, `README.md`, `Panorama y plan de mejora.md` y cualquier archivo `.bak`.
 
-Conviene servir el HTML con `no-cache`, los archivos con hash o nombres estables con caché larga, y activar compresión Brotli o gzip para HTML, CSS, JavaScript, JSON y SVG.
+### Netlify
+
+- **Build command:** `npm run build`
+- **Publish directory:** `dist`
+- El archivo `_headers` se copia a `dist/` y define la CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options` y las políticas de caché: `no-cache` para HTML y JSON, una hora con revalidación para CSS y JS, y un año `immutable` para imágenes y fuentes.
+- La CSP también está en `index.html` como `<meta>` para que el documento tenga la política aun sin headers. La versión de `_headers` agrega `frame-ancestors 'none'`, que no es válido dentro de un `<meta>`.
+
+Conviene mantener activada la compresión Brotli de Netlify para HTML, CSS, JavaScript, JSON y SVG.

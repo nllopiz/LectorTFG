@@ -1,8 +1,8 @@
 # Panorama y plan de mejora
 
-Actualizado: 25 de noviembre de 2026.
+Actualizado: 26 de noviembre de 2026.
 
-Estado: fases 1, 2 y 3 aplicadas en el árbol de trabajo; Fase 4 pendiente.
+Estado: fases 1, 2 y 3 aplicadas; Fase 4 aplicada en el árbol de trabajo, pendiente de despliegue y verificación en producción.
 
 ## Estado actual
 
@@ -42,7 +42,7 @@ Estado: fases 1, 2 y 3 aplicadas en el árbol de trabajo; Fase 4 pendiente.
 
 | Prioridad | Tema | Impacto | Esfuerzo |
 | --- | --- | --- | --- |
-| 1 | Build de publicación y headers del hosting. | Medio | 2–3 h |
+| 1 | Desplegar en Netlify y verificar la CSP y los headers en producción. | Medio | 1 h |
 | 2 | Normalizar las 3.183 entidades HTML a UTF-8 literal. | Bajo-medio | 1–2 h |
 | 3 | Opcionales: barra de progreso, offline/PWA y `figcaption` en todas las figuras. | Bajo | variable |
 
@@ -82,17 +82,17 @@ Estado: fases 1, 2 y 3 aplicadas en el árbol de trabajo; Fase 4 pendiente.
 - [x] Agregar un `<details>` con tabla de datos después de cada gráfico.
 - [x] Agregar un `<caption>` a la tabla para reemplazar el nombre accesible genérico «Tabla 1».
 - [x] Revisar las etiquetas de la lista de medios: los enlaces de «Material audiovisual complementario» se muestran como URL; conviene usar el texto de la entrada como etiqueta o excluirlos de la lista.
-- [x] Normalizar las entidades HTML a UTF-8 literal, dejando intactos `&`, `<`, `>`, `"` y `&nbsp;`; revisar el diff.
+- [ ] Normalizar las entidades HTML a UTF-8 literal, dejando intactos `&`, `<`, `>`, `"` y `&nbsp;`; revisar el diff. Quedan 3.183 entidades, por lo que la tarea sigue pendiente.
 - [ ] Opcional: barra de progreso de lectura, offline/PWA y `figcaption` en todas las figuras.
 
 **Decisión sobre el tema:** se mantiene el tema oscuro por defecto y el selector claro/oscuro. No se agrega la opción `system`.
 
-### Fase 4 — Publicación (por hacer)
+### Fase 4 — Publicación (aplicada, pendiente de despliegue)
 
-- [ ] Script `npm run build` que copie solo lo necesario a `dist/`: `index.html`, `css/`, `js/`, `assets/favicon.svg`, `assets/fonts/`, `assets/images/` y `video-analyses.json`.
-- [ ] Headers del hosting: CSP como header si es posible, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, caché larga para imágenes y fuentes, `no-cache` para HTML.
-- [ ] Verificar la CSP en el entorno real y documentar sus límites si se publica en GitHub Pages.
-- [ ] Confirmar que no se despliegan `sources/`, `scripts/`, `tests/`, `package.json`, `package-lock.json`, `eslint.config.js`, `.github/`, `README.md` ni `Panorama y plan de mejora.md`.
+- [x] Script `npm run build` que copie solo lo necesario a `dist/`:`index.html`, `css/`, `js/`, `assets/favicon.svg`, `assets/fonts/`, `assets/images/`, `video-analyses.json` y `_headers`.
+- [x] Headers del hosting (Netlify, archivo `_headers`): CSP completa, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options`, `no-cache` para HTML y JSON, una hora con revalidación para CSS y JS, y un año `immutable` para imágenes y fuentes.
+- [ ] Verificar la CSP y los headers en el entorno real (requiere desplegar en Netlify).
+- [x] Confirmar que no se despliegan `sources/`, `scripts/`, `tests/`, `package.json`, `package-lock.json`, `eslint.config.js`, `.github/`, `README.md` ni `Panorama y plan de mejora.md`. Verificado sobre `dist/`: 94 archivos, 3,06 MB, sin `.bak` ni rutas excluidas.
 
 ## Decisiones tomadas
 
@@ -100,10 +100,13 @@ Estado: fases 1, 2 y 3 aplicadas en el árbol de trabajo; Fase 4 pendiente.
 - Tema: oscuro por defecto, sin opción `system` en la interfaz.
 - Trabajo por fases: primero calidad y accesibilidad, después publicación.
 - Textos alternativos: se revisan antes de aplicarlos; la propuesta está en `sources/propuesta-textos-alt.md`.
+- Hosting: Netlify, con `npm run build` como comando de build y `dist` como directorio de publicación. La agrupación de la lista de medios por sección se descartó.
 
 ## Notas técnicas
 
-- La CSP por `<meta>` no admite `frame-ancestors` ni `report-uri`; el servidor local ya envía una cabecera CSP completa y el hosting debería hacer lo mismo.
+- La CSP por `<meta>` no admite `frame-ancestors` ni `report-uri`. El archivo `_headers` añade la CSP completa (con `frame-ancestors 'none'`) y el resto de las cabeceras de seguridad para Netlify; el `<meta>` se conserva como respaldo si el archivo se abre sin headers.
+- Los nombres de CSS y JS no llevan hash de contenido, por eso su caché es de una hora con revalidación; las imágenes y fuentes usan un año `immutable`. Si se reemplaza una imagen conservando el nombre, el CDN de Netlify la actualiza en el deploy, pero los navegadores que la tengan en caché pueden tardar en verla.
+- El build excluye archivos `.bak` y verifica que no se publiquen `sources/`, `scripts/`, `tests/`, configuración ni documentación.
 - Las claves `webmili:prefs:v1` y `webmili:reading-position:v1` se conservan para no perder preferencias ni posiciones guardadas.
 - `video-analyses.json` tiene 15 análisis y todas sus claves corresponden a enlaces de YouTube presentes en el documento; los videos sin análisis son una decisión editorial. La validación compartida vive en `js/video-analyses.js`.
 - `linkedom`, ESLint y `globals` son dependencias de desarrollo; no se publican ni afectan al lector.

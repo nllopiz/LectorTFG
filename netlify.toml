@@ -1,0 +1,9 @@
+# Configuración de Netlify.
+# Las cabeceras HTTP viven en _headers (se copia a dist/ con npm run build).
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"

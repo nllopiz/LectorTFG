@@ -69,7 +69,7 @@ async function copyJSDirectory(srcDir, destDir) {
   await mkdir(destDir, { recursive: true });
   const entries = await readdir(srcDir, { withFileTypes: true });
   for (const entry of entries) {
-    if (entry.name.startsWith('.')) continue;
+    if (entry.name.startsWith('.') || entry.name.endsWith('.bak')) continue;
     const srcPath = join(srcDir, entry.name);
     const destPath = join(destDir, entry.name);
     if (entry.isDirectory()) {
@@ -141,6 +141,13 @@ async function main() {
   // 7. video-analyses.json
   console.log('Copiando video-analyses.json...');
   await copyFile(join(ROOT, 'video-analyses.json'), join(DIST, 'video-analyses.json'));
+
+  // 8. _headers (Netlify)
+  console.log('Copiando _headers...');
+  const headersSrc = join(ROOT, '_headers');
+  if (existsSync(headersSrc)) {
+    await copyFile(headersSrc, join(DIST, '_headers'));
+  }
 
   console.log('Build finalizado.');
   console.log('Los archivos se encuentran en la carpeta dist/.');
