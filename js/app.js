@@ -1333,8 +1333,12 @@ function transitionDuration(opening) {
 }
 
 function stageHeightFor(media, availableWidth) {
-  if (media.provider === "youtube") {
+  if (media.provider === 'youtube') {
     return Math.round((availableWidth * 9) / 16);
+  }
+
+  if (media.provider === 'instagram') {
+    return 700;
   }
 
   return media.height || 352;

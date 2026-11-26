@@ -1417,6 +1417,18 @@ a {
   transition: opacity 200ms ease;
 }
 
+.media-stage iframe.instagram-media-rendered {
+  width: 100% !important;
+  height: 700px !important;
+  max-width: 100% !important;
+}
+
+@media (max-width: 768px) {
+  .media-stage iframe.instagram-media-rendered {
+    height: 550px !important;
+  }
+}
+
 .media-stage.is-ready iframe {
   opacity: 1;
 }
@@ -1911,6 +1923,8 @@ a {
     padding-right: 18px;
   }
 }
+
+
 
 /* ---------- Movimiento reducido ---------- */
 
