@@ -1055,7 +1055,7 @@ a {
   margin: 0;
   min-width: 0;
   overflow-wrap: anywhere;
-  font-family: var(--font-heading);
+  font-family: var(--font-doc);
   font-size: 1.15rem;
   line-height: 1.2;
 }
