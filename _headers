@@ -3,7 +3,7 @@
 # frame-ancestors, que no es válido dentro de un <meta>.
 
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.instagram.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.cdninstagram.com https://*.instagram.com; font-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://www.youtube.com https://open.spotify.com https://www.instagram.com; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.instagram.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.cdninstagram.com https://*.instagram.com; font-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.instagram.com; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()

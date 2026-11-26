@@ -2,16 +2,16 @@
 
 Actualizado: 26 de noviembre de 2026.
 
-Estado: fases 1 a 3 cerradas; Fase 4 aplicada en el árbol de trabajo, solo pendiente el despliegue en Netlify y la verificación en producción.
+Estado: fases 1 a 5 aplicadas; Fase 4 pendiente solo del despliegue en Netlify y la verificación en producción.
 
 ## Estado actual
 
 - El proyecto sigue siendo estático, sin framework, y el contenido se puede leer aunque falle JavaScript. `npm run build` solo copia archivos a `dist/`.
-- Las 31 pruebas pasan con `npm test`.
+- Las 32 pruebas pasan con `npm test`.
 - `npm run lint` y `npm run audit` pasan sin errores; la auditoría no tiene advertencias (la tabla tiene `caption`).
 - `assets/images/` contiene 78 archivos WebP y pesa 2,5 MB; los originales están en `sources/images/`.
 - La CSP y los estilos de impresión ya están integrados.
-- El repositorio está en GitHub (`nllopiz/LectorTFG`), rama `main`. La CI de `.github/workflows/ci.yml` pasó en el push de la Fase 4 (run #7).
+- El repositorio está en GitHub (`nllopiz/LectorTFG`), rama `main`. La CI de `.github/workflows/ci.yml` pasó en el último push a `main` (run #25); la Fase 5 se valida con `npm run check` antes de publicar.
 
 ## Lo que ya está resuelto
 
@@ -29,13 +29,15 @@ Estado: fases 1 a 3 cerradas; Fase 4 aplicada en el árbol de trabajo, solo pend
 | Impresión | `@media print` oculta la interfaz, pasa el documento a blanco y negro y evita cortes en figuras y tablas. | `css/app.css` |
 | Metadatos | Título, descripción y `DOCUMENT_NAME` usan el título real del TFG. | `index.html`, `js/app.js` |
 | README | Título, estructura, publicación, calidad y flujo de imágenes actualizados. | `README.md` |
-| Pruebas del DOM | 11 pruebas con `linkedom` para encabezados, protocolos, enlaces internos, multimedia, tablas e imágenes. | `tests/document.test.mjs`, `tests/helpers/dom.mjs` |
+| Pruebas del DOM | 12 pruebas con `linkedom` para encabezados, protocolos, enlaces internos, multimedia de YouTube e Instagram, etiquetas de referencias, tablas e imágenes. | `tests/document.test.mjs`, `tests/helpers/dom.mjs` |
 | Datos de análisis | Validación del esquema, claves de YouTube y correspondencia con `index.html`; la lógica se extrajo a un módulo puro. | `js/video-analyses.js`, `tests/video-analyses.test.mjs` |
 | Lint | ESLint 10 con configuración plana, globals de navegador y Node, y `npm run lint`. | `eslint.config.js`, `package.json` |
 | Auditoría HTML | Comprueba encabezados, IDs, ARIA, imágenes, enlaces, archivos locales, CSP y estructura de tablas y medios. | `scripts/audit-html.mjs` |
 | Servidor local | Servidor con `node:http`, MIME, cabeceras de seguridad, protección de rutas y soporte de `GET`/`HEAD`. | `scripts/serve.mjs` |
 | CI | `npm ci`, pruebas, lint y auditoría en cada push a `main` y pull request. | `.github/workflows/ci.yml` |
 | Seguridad de enlaces | Se agregó `rel="noopener noreferrer"` al enlace de YouTube que faltaba y a los enlaces multimedia generados. | `index.html`, `js/document.js` |
+| Reproductor | YouTube e Instagram Reels integrados; Spotify retirado del parser, reproductor, CSP, estilos y pruebas. Las referencias conservan `Título <a>URL</a>` y el título solo se usa como etiqueta del panel. | `js/links.js`, `js/document.js`, `js/app.js`, `css/app.css`, `tests/` |
+| Publicación | GitHub Pages publica la raíz como vista previa temporal; Netlify es el destino final desde `dist/`. | `README.md`, `_headers`, `netlify.toml` |
 | Accesibilidad de contenidos | 33 `alt` aplicados (incluye corrección tapa libro y 3 gráficos); `<caption>` a la tabla; `<details>` con datos después de cada gráfico. | `index.html` |
 
 ## Pendiente priorizado
@@ -87,12 +89,25 @@ Los opcionales (smoke test de Playwright, barra de progreso, offline/PWA y `figc
 
 **Decisión sobre el tema:** se mantiene el tema oscuro por defecto y el selector claro/oscuro. No se agrega la opción `system`.
 
-### Fase 4 — Publicación (aplicada, pendiente de despliegue)
+### Fase 4 — Publicación (aplicada, pendiente de despliegue en Netlify)
 
 - [x] Script `npm run build` que copie solo lo necesario a `dist/`:`index.html`, `css/`, `js/`, `assets/favicon.svg`, `assets/fonts/`, `assets/images/`, `video-analyses.json` y `_headers`.
 - [x] Headers del hosting (Netlify, archivo `_headers`): CSP completa, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options`, `no-cache` para HTML y JSON, una hora con revalidación para CSS y JS, y un año `immutable` para imágenes y fuentes.
 - [ ] Verificar la CSP y los headers en el entorno real (requiere desplegar en Netlify).
 - [x] Confirmar que no se despliegan `sources/`, `scripts/`, `tests/`, `package.json`, `package-lock.json`, `eslint.config.js`, `.github/`, `README.md` ni `Panorama y plan de mejora.md`. Verificado sobre `dist/`: 95 archivos, 3,06 MB, sin `.bak` ni rutas excluidas.
+
+### Fase 5 — Instagram y retirada de Spotify (aplicada)
+
+- [x] Integrar Instagram Reels en el reproductor, con CSP específica para `instagram.com` y sus CDN.
+- [x] Mantener el texto visible de las referencias `Título <a>URL</a>`; usar el título solo como etiqueta del panel (`data-label`).
+- [x] Evitar `"null"` en `data-embed` para Instagram.
+- [x] Retirar Spotify de `js/links.js`, `js/app.js`, `css/app.css`, CSP, auditoría, pruebas y documentación técnica. Las menciones editoriales del TFG se conservan.
+- [x] Alinear la CSP de `scripts/serve.mjs` con la publicada para que Instagram funcione en local.
+- [x] Eliminar `instagram.html` de la raíz.
+- [x] Actualizar el README y este panorama.
+- [ ] Verificar en Netlify la CSP y las cabeceras definitivas.
+
+**Criterio de aceptación:** `npm run check` en verde, 0 referencias con texto duplicado y YouTube e Instagram funcionando en local sin errores de CSP.
 
 ## Decisiones tomadas
 
@@ -100,13 +115,17 @@ Los opcionales (smoke test de Playwright, barra de progreso, offline/PWA y `figc
 - Tema: oscuro por defecto, sin opción `system` en la interfaz.
 - Trabajo por fases: primero calidad y accesibilidad, después publicación.
 - Textos alternativos: se revisan antes de aplicarlos; la propuesta está en `sources/propuesta-textos-alt.md`.
-- Hosting: Netlify, con `npm run build` como comando de build y `dist` como directorio de publicación. La agrupación de la lista de medios por sección se descartó.
+- Reproductor: solo YouTube e Instagram Reels. Spotify se retira de la integración; las menciones editoriales del TFG se conservan.
+- Hosting: GitHub Pages es la vista previa actual y publica la raíz del repositorio; Netlify es el destino final, con `npm run build` como comando de build y `dist` como directorio de publicación. La agrupación de la lista de medios por sección se descartó.
 - Opcionales descartados: smoke test de Playwright, barra de progreso, offline/PWA y `figcaption`.
 - Entidades HTML: normalizadas a UTF-8 literal (3.074 conversiones); se conservan `&amp;`, `&quot;` y `&nbsp;`.
 
 ## Notas técnicas
 
 - La CSP por `<meta>` no admite `frame-ancestors` ni `report-uri`. El archivo `_headers` añade la CSP completa (con `frame-ancestors 'none'`) y el resto de las cabeceras de seguridad para Netlify; el `<meta>` se conserva como respaldo si el archivo se abre sin headers.
+- La CSP permite YouTube e Instagram; no incluye Spotify. `scripts/serve.mjs` replica la misma política en desarrollo.
+- GitHub Pages ignora `_headers` (responde 404), así que las cabeceras de seguridad solo se pueden verificar en Netlify.
+- Hay 57 enlaces multimedia en el documento: 48 de YouTube y 9 de Instagram. Ninguna referencia bibliográfica duplica el texto visible del enlace.
 - Los nombres de CSS y JS no llevan hash de contenido, por eso su caché es de una hora con revalidación; las imágenes y fuentes usan un año `immutable`. Si se reemplaza una imagen conservando el nombre, el CDN de Netlify la actualiza en el deploy, pero los navegadores que la tengan en caché pueden tardar en verla.
 - El build excluye archivos `.bak` y verifica que no se publiquen `sources/`, `scripts/`, `tests/`, configuración ni documentación.
 - Las claves `webmili:prefs:v1` y `webmili:reading-position:v1` se conservan para no perder preferencias ni posiciones guardadas.
@@ -115,4 +134,4 @@ Los opcionales (smoke test de Playwright, barra de progreso, offline/PWA y `figc
 - La auditoría recorre el DOM con el mismo `prepareDocument` que usa el navegador, por lo que valida también los IDs generados en tiempo de ejecución.
 - La tabla del documento tiene `caption`; la auditoría lo informa como superado.
 - Quedan 109 entidades HTML intencionales (`&nbsp;` 86, `&quot;` 15, `&amp;` 8); el resto del documento usa UTF-8 literal.
-- Los tres gráficos tienen `alt` incorrectos en el HTML actual; la propuesta incluye los textos corregidos y los datos principales.
+- Los tres gráficos usan los `alt` corregidos de la propuesta e incluyen sus tablas de datos.

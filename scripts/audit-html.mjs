@@ -130,14 +130,14 @@ function checkInlineCode(document) {
       }
 
       if (attribute.name.toLowerCase() === 'style') {
-        fail(`${describe(element)}: estilo en línea bloqueado por la CSP.`);
+        fail(`${describe(element)}: atributo style en línea; los estilos deben vivir en CSS local.`);
       }
     }
   }
 
   for (const script of document.querySelectorAll('script')) {
     if (!script.hasAttribute('src')) {
-      fail('Hay un script en línea; la CSP solo permite scripts locales.');
+      fail('Hay un script en línea; solo se permiten scripts locales o de Instagram.');
     }
   }
 }

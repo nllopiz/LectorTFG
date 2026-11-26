@@ -48,6 +48,18 @@ function enhanceExternalLink(link, url) {
   link.append(note);
 }
 
+function defaultMediaLabel(media) {
+  if (media.provider === "youtube") {
+    return media.type === "playlist" ? "Lista de YouTube" : "Video de YouTube";
+  }
+
+  if (media.provider === "instagram") {
+    return "Reel de Instagram";
+  }
+
+  return "Contenido multimedia";
+}
+
 function enhanceMediaLink(link, media) {
   link.href = media.href;
   link.rel = "noopener noreferrer";
@@ -55,14 +67,13 @@ function enhanceMediaLink(link, media) {
   link.dataset.provider = media.provider;
   link.dataset.type = media.type;
   link.dataset.id = media.id;
-  link.dataset.embed = media.embedUrl;
+  link.dataset.embed = media.embedUrl || "";
   link.dataset.height = media.height ? String(media.height) : "";
   link.dataset.start = media.start ? String(media.start) : "";
   link.classList.add("media-link");
 
   const visibleText = cleanText(link.textContent);
   const isUrl = /^(https?:\/\/|www\.)/i.test(visibleText);
-
   const bibliographyEntry = link.closest(".bibliography-entry");
 
   const contextualTitle = bibliographyEntry
@@ -74,44 +85,29 @@ function enhanceMediaLink(link, media) {
       )
     : "";
 
-  const defaultLabel =
-    media.provider === "youtube"
-      ? media.type === "playlist"
-        ? "Lista de YouTube"
-        : "Video de YouTube"
-      : `${media.type.charAt(0).toUpperCase()}${media.type.slice(1)} de Spotify`;
-
-  const label = (!isUrl && visibleText) || contextualTitle || defaultLabel;
-
+  const label =
+    contextualTitle || (!isUrl && visibleText) || defaultMediaLabel(media);
   const timeLabel = parseMediaTimeLabel(media);
 
   link.dataset.label = timeLabel ? `${label} · ${timeLabel}` : label;
   link.setAttribute("aria-expanded", "false");
   link.setAttribute("aria-controls", "media-panel");
 
+  if (
+    link.children.length === 1 &&
+    link.firstElementChild?.classList.contains("media-link__text")
+  ) {
+    return;
+  }
+
   const text = document.createElement("span");
   text.className = "media-link__text";
-  text.textContent = label;
 
-  if (media.provider === "spotify") {
-  const badge = document.createElement("span");
-  badge.className = "media-badge media-badge--spotify";
-  badge.setAttribute("aria-hidden", "true");
-  badge.textContent = "Spotify";
+  while (link.firstChild) {
+    text.append(link.firstChild);
+  }
 
-  link.replaceChildren(badge, document.createTextNode(" "), text);
-  return;
-}
-
-link.replaceChildren(text);
-
-  /*const badge = document.createElement("span");
-  badge.className = `media-badge media-badge--${media.provider}`;
-  badge.setAttribute("aria-hidden", "true");
-  badge.textContent = "Spotify";
-
-  link.replaceChildren(badge, document.createTextNode(" "), text);*/
-  link.replaceChildren(text);
+  link.append(text);
 }
 
 function markBrokenAnchor(link) {

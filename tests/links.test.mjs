@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  parseInstagramUrl,
   parseMediaUrl,
-  parseSpotifyUrl,
   parseYouTubeTime,
   parseYouTubeUrl
 } from '../js/links.js';
@@ -56,24 +56,42 @@ test('YouTube t parameter accepts compact durations', () => {
   assert.equal(media.embedUrl, 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&start=90');
 });
 
-test('Spotify recognizes types and language-prefixed paths', () => {
-  const media = parseSpotifyUrl('https://open.spotify.com/intl-es/album/1234567890abcd');
+test('Instagram reels parse IDs from canonical and bare hosts', () => {
+  const urls = [
+    'https://www.instagram.com/reel/Dfw_T_UhpPb/',
+    'https://instagram.com/reel/Dfw_T_UhpPb',
+    'https://www.instagram.com/reel/Dfw_T_UhpPb/?utm_source=ig_web_copy_link'
+  ];
 
-  assert.equal(media.provider, 'spotify');
-  assert.equal(media.type, 'album');
-  assert.equal(media.id, '1234567890abcd');
-  assert.equal(media.height, 352);
-  assert.equal(media.embedUrl, 'https://open.spotify.com/embed/album/1234567890abcd');
+  for (const url of urls) {
+    const media = parseInstagramUrl(url);
+
+    assert.equal(media.provider, 'instagram');
+    assert.equal(media.type, 'reel');
+    assert.equal(media.id, 'Dfw_T_UhpPb');
+    assert.equal(media.start, null);
+    assert.equal(media.height, null);
+    assert.equal(media.embedUrl, null);
+    assert.equal(media.href, 'https://www.instagram.com/reel/Dfw_T_UhpPb/');
+  }
 });
 
-test('Spotify track and episode heights are type-specific', () => {
-  assert.equal(parseMediaUrl('https://open.spotify.com/track/1234567890abcd').height, 152);
-  assert.equal(parseMediaUrl('https://open.spotify.com/episode/1234567890abcd').height, 232);
+test('parseMediaUrl recognizes Instagram and rejects Spotify', () => {
+  const instagram = parseMediaUrl('https://www.instagram.com/reel/Dfw_T_UhpPb/');
+
+  assert.equal(instagram?.provider, 'instagram');
+  assert.equal(
+    parseMediaUrl('https://open.spotify.com/track/1234567890abcd'),
+    null
+  );
 });
 
 test('unsupported and malformed links return null', () => {
   assert.equal(parseMediaUrl('https://example.com/watch?v=dQw4w9WgXcQ'), null);
   assert.equal(parseMediaUrl('javascript:alert(1)'), null);
   assert.equal(parseYouTubeUrl('https://www.youtube.com/watch?v=bad'), null);
-  assert.equal(parseSpotifyUrl('https://open.spotify.com/unknown/1234567890abcd'), null);
+  assert.equal(parseInstagramUrl('http://www.instagram.com/reel/Dfw_T_UhpPb/'), null);
+  assert.equal(parseInstagramUrl('https://example.com/reel/Dfw_T_UhpPb/'), null);
+  assert.equal(parseInstagramUrl('https://www.instagram.com/p/Dfw_T_UhpPb/'), null);
+  assert.equal(parseInstagramUrl('https://www.instagram.com/reel/bad!'), null);
 });

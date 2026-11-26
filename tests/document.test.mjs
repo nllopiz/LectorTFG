@@ -170,29 +170,51 @@ test('prepareDocument enriches YouTube links with media metadata', () => {
   assert.equal(link.querySelectorAll('.media-link__text').length, 1);
 });
 
-test('prepareDocument enriches Spotify links with a provider badge', () => {
+test('prepareDocument enriches Instagram reels without a provider badge', () => {
   const { container } = installDom(`
-    <a id="spotify" href="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT">Canción</a>
+    <a id="instagram" href="https://www.instagram.com/reel/Dfw_T_UhpPb/?utm_source=ig_web_copy_link">Reel</a>
   `);
 
   prepareDocument(container);
 
-  const link = container.querySelector('#spotify');
-  const badge = link.querySelector('.media-badge--spotify');
-  const text = link.querySelector('.media-link__text');
+  const link = container.querySelector('#instagram');
 
-  assert.equal(link.dataset.provider, 'spotify');
-  assert.equal(link.dataset.type, 'track');
-  assert.equal(link.dataset.id, '4cOdK2wGLETKBW3PvgPWqT');
-  assert.equal(link.dataset.height, '152');
+  assert.equal(link.dataset.provider, 'instagram');
+  assert.equal(link.dataset.type, 'reel');
+  assert.equal(link.dataset.id, 'Dfw_T_UhpPb');
+  assert.equal(link.dataset.embed, '');
+  assert.equal(link.dataset.height, '');
   assert.equal(link.dataset.start, '');
-  assert.equal(link.dataset.label, 'Canción');
+  assert.equal(link.dataset.label, 'Reel');
   assert.equal(link.getAttribute('aria-expanded'), 'false');
   assert.equal(link.getAttribute('aria-controls'), 'media-panel');
   assert.equal(link.getAttribute('rel'), 'noopener noreferrer');
-  assert.equal(badge.textContent, 'Spotify');
-  assert.equal(badge.getAttribute('aria-hidden'), 'true');
-  assert.equal(text.textContent, 'Canción');
+  assert.equal(link.getAttribute('href'), 'https://www.instagram.com/reel/Dfw_T_UhpPb/');
+  assert.equal(link.querySelector('.media-badge'), null);
+  assert.equal(link.textContent, 'Reel');
+  assert.equal(link.querySelector('.media-link__text').textContent, 'Reel');
+});
+
+test('prepareDocument keeps bibliography link text and uses the title as label', () => {
+  const { container } = installDom(`
+    <p class="bibliography-entry">
+      Boxeador neuquino sube al ring cantando folklore
+      <a id="bibliography" href="https://www.instagram.com/reel/Dfw_T_UhpPb/" target="_blank" rel="noopener noreferrer">https://www.instagram.com/reel/Dfw_T_UhpPb/</a>
+    </p>
+  `);
+
+  prepareDocument(container);
+  prepareDocument(container);
+
+  const link = container.querySelector('#bibliography');
+  const text = link.querySelector('.media-link__text');
+
+  assert.equal(link.dataset.label, 'Boxeador neuquino sube al ring cantando folklore');
+  assert.equal(link.dataset.embed, '');
+  assert.equal(link.querySelectorAll('.media-link__text').length, 1);
+  assert.equal(text.textContent, 'https://www.instagram.com/reel/Dfw_T_UhpPb/');
+  assert.equal(link.textContent, 'https://www.instagram.com/reel/Dfw_T_UhpPb/');
+  assert.equal(link.querySelector('.media-badge'), null);
 });
 
 test('prepareDocument wraps tables once and names them accessibly', () => {

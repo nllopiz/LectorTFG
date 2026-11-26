@@ -86,13 +86,6 @@ const PROVIDERS = {
     frameTitle: "Reproductor de YouTube",
     allow: "autoplay; encrypted-media; picture-in-picture; fullscreen",
   },
-  spotify: {
-    name: "Spotify",
-    externalLabel: "Abrir en Spotify",
-    frameTitle: "Reproductor de Spotify",
-    allow:
-      "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture",
-  },
   instagram: {
     name: "Instagram",
     externalLabel: "Abrir en Instagram",
@@ -104,11 +97,6 @@ const PROVIDERS = {
 const TYPE_LABELS = {
   video: "Video de YouTube",
   playlist: "Lista de YouTube",
-  track: "Pista de Spotify",
-  album: "Álbum de Spotify",
-  episode: "Episodio de Spotify",
-  show: "Programa de Spotify",
-  artist: "Artista de Spotify",
   reel: "Reel de Instagram",
 };
 
@@ -134,8 +122,7 @@ let currentInstagramEmbed = null;
 let instagramRenderToken = 0;
 let instagramScriptPromise = null;
 let instagramObserver = null;
-//let instagramResizeObserver = null;
-//let instagramFrameHeight = null;
+
 /* ---------- Utilidades ---------- */
 
 function announce(message) {
@@ -488,10 +475,6 @@ function renderMediaList() {
     item.className = "media-list-item";
     item.dataset.mediaIndex = String(index);
 
-    /*const provider = document.createElement("span");
-    provider.className = `media-list-item__provider media-list-item__provider--${media.provider}`;
-    provider.textContent = PROVIDERS[media.provider].name;*/
-
     const copy = document.createElement("span");
     copy.className = "media-list-item__copy";
 
@@ -504,7 +487,6 @@ function renderMediaList() {
     type.textContent = TYPE_LABELS[media.type] || media.type;
 
     copy.append(label, type);
-    /*item.append(provider, copy);*/
     item.append(copy);
     listItem.append(item);
     mediaList.append(listItem);
@@ -1269,29 +1251,15 @@ function mediaFromLink(link) {
   };
 }
 
-function isAllowedEmbed(url, provider) {
+function isAllowedEmbed(url) {
   try {
     const parsed = new URL(url, document.baseURI);
 
-    if (parsed.protocol !== "https:") {
-      return false;
-    }
-
-    if (provider === "youtube") {
-      return (
-        parsed.hostname === "www.youtube-nocookie.com" &&
-        parsed.pathname.startsWith("/embed/")
-      );
-    }
-
-    if (provider === "spotify") {
-      return (
-        parsed.hostname === "open.spotify.com" &&
-        parsed.pathname.startsWith("/embed/")
-      );
-    }
-
-    return false;
+    return (
+      parsed.protocol === "https:" &&
+      parsed.hostname === "www.youtube-nocookie.com" &&
+      parsed.pathname.startsWith("/embed/")
+    );
   } catch {
     return false;
   }
@@ -1311,7 +1279,6 @@ function safeExternalUrl(url) {
       "m.youtube.com",
       "music.youtube.com",
       "youtu.be",
-      "open.spotify.com",
     ]);
 
     const isInstagramReel =
@@ -1340,22 +1307,18 @@ function stageHeightFor(media, availableWidth) {
   }
 
   if (media.provider === "instagram") {
-  const viewportHeight =
-    window.visualViewport?.height || window.innerHeight;
+    const viewportHeight =
+      window.visualViewport?.height || window.innerHeight;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const ratio = isMobile ? 0.78 : 0.82;
+    const minHeight = isMobile ? 440 : 560;
+    const maxHeight = isMobile ? 650 : 820;
 
-  const isMobile = window.matchMedia(
-    "(max-width: 768px)"
-  ).matches;
-
-  const ratio = isMobile ? 0.78 : 0.82;
-  const minHeight = isMobile ? 440 : 560;
-  const maxHeight = isMobile ? 650 : 820;
-
-  return Math.min(
-    maxHeight,
-    Math.max(minHeight, Math.round(viewportHeight * ratio))
-  );
-}
+    return Math.min(
+      maxHeight,
+      Math.max(minHeight, Math.round(viewportHeight * ratio)),
+    );
+  }
 
   return media.height || 352;
 }
@@ -1439,11 +1402,6 @@ function destroyIframe() {
     instagramObserver.disconnect();
     instagramObserver = null;
   }
-
-  /*if (instagramResizeObserver) {
-    instagramResizeObserver.disconnect();
-    instagramResizeObserver = null;
-  }*/
 
   if (currentIframe) {
     currentIframe.remove();
@@ -1554,27 +1512,6 @@ function createInstagramEmbed(media) {
       instagramObserver = null;
     }
 
-    /*if (instagramResizeObserver) {
-      instagramResizeObserver.disconnect();
-    }*/
-
-    /*instagramResizeObserver = new ResizeObserver((entries) => {
-      if (
-        token !== instagramRenderToken ||
-        currentInstagramEmbed !== blockquote
-      ) {
-        return;
-      }
-
-      const height = Math.ceil(entries[0].contentRect.height);
-
-      if (height > 0 && height !== instagramFrameHeight) {
-        instagramFrameHeight = height;
-        updateMediaSize();
-      }
-    });*/
-
-    /*instagramResizeObserver.observe(iframe);*/
   };
 
   loadInstagramScript()
@@ -1714,7 +1651,7 @@ function openMedia(media, trigger) {
   const isAllowed =
     media.provider === "instagram"
       ? isAllowedInstagramUrl(media.href)
-      : isAllowedEmbed(media.embedUrl, media.provider);
+      : isAllowedEmbed(media.embedUrl);
 
   if (!isAllowed) {
     console.error("Se rechazó una URL multimedia no permitida.", media);
@@ -1991,7 +1928,7 @@ function updateConnectionNote() {
 
   mediaNote.hidden = !offline;
   mediaNote.textContent = offline
-    ? "Sin conexión. El documento sigue disponible, pero YouTube o Spotify no se pueden cargar."
+    ? "Sin conexión. El documento sigue disponible, pero YouTube o Instagram no se pueden cargar."
     : "";
 
   updateMediaSize();

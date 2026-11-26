@@ -8,12 +8,12 @@ const HOST = process.env.HOST || '127.0.0.1';
 const PORT = Number.parseInt(process.env.PORT ?? '8080', 10);
 const CSP = [
   "default-src 'self'",
-  "script-src 'self'",
-  "style-src 'self'",
-  "img-src 'self' data:",
+  "script-src 'self' https://www.instagram.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: https://*.cdninstagram.com https://*.instagram.com",
   "font-src 'self'",
   "connect-src 'self'",
-  'frame-src https://www.youtube-nocookie.com https://www.youtube.com https://open.spotify.com',
+  'frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.instagram.com',
   "object-src 'none'",
   "base-uri 'none'",
   "form-action 'none'",

@@ -11,15 +11,6 @@ const YOUTUBE_HOSTS = new Set([
   'youtu.be'
 ]);
 
-const SPOTIFY_TYPES = new Set([
-  'track',
-  'album',
-  'playlist',
-  'episode',
-  'show',
-  'artist'
-]);
-
 const INSTAGRAM_HOSTS = new Set([
   'instagram.com',
   'www.instagram.com'
@@ -28,7 +19,6 @@ const INSTAGRAM_HOSTS = new Set([
 const INSTAGRAM_ID = /^[A-Za-z0-9_-]{5,}$/;
 
 const YOUTUBE_ID = /^[A-Za-z0-9_-]{6,}$/;
-const SPOTIFY_ID = /^[A-Za-z0-9]{6,}$/;
 
 export function parseYouTubeTime(value) {
   if (typeof value !== 'string' && typeof value !== 'number') {
@@ -130,53 +120,6 @@ export function parseYouTubeUrl(value) {
   };
 }
 
-export function parseSpotifyUrl(value) {
-  let url;
-
-  try {
-    url = new URL(String(value), 'https://webmili.local/');
-  } catch {
-    return null;
-  }
-
-  if (url.protocol !== 'https:' || url.hostname.toLowerCase() !== 'open.spotify.com') {
-    return null;
-  }
-
-  const segments = url.pathname.split('/').filter(Boolean);
-  const typeIndex = segments.findIndex((segment) => SPOTIFY_TYPES.has(segment));
-
-  if (typeIndex < 0) {
-    return null;
-  }
-
-  const type = segments[typeIndex];
-  const id = segments[typeIndex + 1];
-
-  if (!id || !SPOTIFY_ID.test(id)) {
-    return null;
-  }
-
-  const heights = {
-    track: 152,
-    episode: 232,
-    album: 352,
-    playlist: 352,
-    show: 352,
-    artist: 352
-  };
-
-  return {
-    provider: 'spotify',
-    type,
-    id,
-    start: null,
-    href: url.href,
-    embedUrl: `https://open.spotify.com/embed/${type}/${encodeURIComponent(id)}`,
-    height: heights[type]
-  };
-}
-
 export function parseInstagramUrl(value) {
   let url;
 
@@ -217,11 +160,7 @@ export function parseInstagramUrl(value) {
 }
 
 export function parseMediaUrl(value) {
-  return (
-    parseYouTubeUrl(value) ||
-    parseSpotifyUrl(value) ||
-    parseInstagramUrl(value)
-  );
+  return parseYouTubeUrl(value) || parseInstagramUrl(value);
 }
 
 export function parseMediaTimeLabel(media) {

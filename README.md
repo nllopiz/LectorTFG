@@ -8,11 +8,11 @@ Lector web del Trabajo Final de Grado «El cuándo de mi por qué. La revitaliza
 - Índice generado desde los encabezados, con navegación lateral responsive.
 - Tema claro/oscuro y tamaño de lectura ajustable; las preferencias se guardan en el dispositivo.
 - La lectura se retoma desde la última posición; solo se guarda localmente el encabezado y su desplazamiento, no el contenido.
-- Reproducción integrada de enlaces de YouTube y Spotify, con opción para abrirlos en el servicio original.
+- Reproducción integrada de enlaces de YouTube e Instagram Reels, con opción para abrirlos en el servicio original.
 - Direcciones compartibles por sección (`#chapter-2-title`) y navegación con Atrás/Adelante del navegador.
 - Imágenes en WebP con variantes responsive, dimensiones declaradas y carga diferida para evitar saltos de maquetación.
 - Navegación por teclado, foco visible de alto contraste y soporte para movimiento reducido.
-- Política de seguridad de contenido (CSP) restrictiva y reproducción externa limitada a YouTube y Spotify.
+- Política de seguridad de contenido (CSP) restrictiva y reproducción externa limitada a YouTube e Instagram.
 - Estilos de impresión para guardar el documento en PDF sin la interfaz de lectura.
 
 ## Ejecución local
@@ -53,7 +53,7 @@ npm run audit
 npm run check
 ```
 
-`npm test` ejecuta las pruebas de enlaces multimedia, enlaces internos, preferencias, preparación del DOM y esquema de `video-analyses.json`. `npm run lint` analiza JavaScript con ESLint; `npm run audit` comprueba encabezados, IDs, referencias ARIA, imágenes, enlaces y archivos locales de `index.html`. `npm run check` encadena las tres tareas.
+`npm test` ejecuta las pruebas de enlaces multimedia (YouTube e Instagram), enlaces internos, preferencias, preparación del DOM, etiquetas de las referencias y esquema de `video-analyses.json`. `npm run lint` analiza JavaScript con ESLint; `npm run audit` comprueba encabezados, IDs, referencias ARIA, imágenes, enlaces y archivos locales de `index.html`. `npm run check` encadena las tres tareas.
 
 La integración continua de `.github/workflows/ci.yml` ejecuta `npm ci`, las pruebas, el lint y la auditoría en cada push a `main` y en cada pull request.
 
@@ -62,7 +62,9 @@ La integración continua de `.github/workflows/ci.yml` ejecuta `npm ci`, las pru
 ```text
 ├─ .github/workflows/ci.yml
 ├─ .nvmrc
+├─ _headers
 ├─ eslint.config.js
+├─ netlify.toml
 ├─ package.json
 ├─ package-lock.json
 ├─ index.html
@@ -100,7 +102,14 @@ La integración continua de `.github/workflows/ci.yml` ejecuta `npm ci`, las pru
 
 ## Publicación
 
-El sitio se publica en Netlify desde la carpeta `dist/`, que genera `npm run build`. El build copia solo lo necesario: `index.html`, `css/`, `js/`, `video-analyses.json`, `assets/` (`favicon.svg`, `fonts/` e `images/`) y `_headers`. Quedan fuera `sources/`, `scripts/`, `tests/`, `package.json`, `package-lock.json`, `eslint.config.js`, `.github/`, `README.md`, `Panorama y plan de mejora.md` y cualquier archivo `.bak`.
+El destino final es Netlify, desde la carpeta `dist/`, que genera `npm run build`. Mientras tanto, GitHub Pages publica la raíz del repositorio como vista previa en <https://nllopiz.github.io/LectorTFG/>.
+
+El build copia solo lo necesario: `index.html`, `css/`, `js/`, `video-analyses.json`, `assets/` (`favicon.svg`, `fonts/` e `images/`) y `_headers`. Quedan fuera `sources/`, `scripts/`, `tests/`, `package.json`, `package-lock.json`, `eslint.config.js`, `.github/`, `README.md`, `Panorama y plan de mejora.md` y cualquier archivo `.bak`.
+
+### Vista previa en GitHub Pages
+
+- Pages publica la raíz del repositorio, incluidos `sources/`, `scripts/`, `tests/` y la documentación. Es una vista previa temporal, no la publicación definitiva.
+- Pages ignora `_headers`. La CSP, `frame-ancestors 'none'` y el resto de las cabeceras de seguridad solo se aplican y se verifican en Netlify.
 
 ### Netlify
 
@@ -108,5 +117,6 @@ El sitio se publica en Netlify desde la carpeta `dist/`, que genera `npm run bui
 - **Publish directory:** `dist`
 - El archivo `_headers` se copia a `dist/` y define la CSP, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options` y las políticas de caché: `no-cache` para HTML y JSON, una hora con revalidación para CSS y JS, y un año `immutable` para imágenes y fuentes.
 - La CSP también está en `index.html` como `<meta>` para que el documento tenga la política aun sin headers. La versión de `_headers` agrega `frame-ancestors 'none'`, que no es válido dentro de un `<meta>`.
+- La CSP permite reproducir YouTube e Instagram; no incluye Spotify.
 
 Conviene mantener activada la compresión Brotli de Netlify para HTML, CSS, JavaScript, JSON y SVG.

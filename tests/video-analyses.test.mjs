@@ -87,7 +87,7 @@ test('getVideoAnalysis only returns analyses for YouTube videos', () => {
     null
   );
   assert.equal(
-    getVideoAnalysis(analyses, { provider: 'spotify', type: 'track', id: key }),
+    getVideoAnalysis(analyses, { provider: 'instagram', type: 'reel', id: key }),
     null
   );
   assert.equal(
