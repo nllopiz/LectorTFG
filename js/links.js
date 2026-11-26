@@ -20,6 +20,13 @@ const SPOTIFY_TYPES = new Set([
   'artist'
 ]);
 
+const INSTAGRAM_HOSTS = new Set([
+  'instagram.com',
+  'www.instagram.com'
+]);
+
+const INSTAGRAM_ID = /^[A-Za-z0-9_-]{5,}$/;
+
 const YOUTUBE_ID = /^[A-Za-z0-9_-]{6,}$/;
 const SPOTIFY_ID = /^[A-Za-z0-9]{6,}$/;
 
@@ -170,8 +177,51 @@ export function parseSpotifyUrl(value) {
   };
 }
 
+export function parseInstagramUrl(value) {
+  let url;
+
+  try {
+    url = new URL(String(value), 'https://webmili.local/');
+  } catch {
+    return null;
+  }
+
+  if (
+    url.protocol !== 'https:' ||
+    !INSTAGRAM_HOSTS.has(url.hostname.toLowerCase())
+  ) {
+    return null;
+  }
+
+  const segments = url.pathname.split('/').filter(Boolean);
+
+  if (segments.length < 2 || segments[0] !== 'reel') {
+    return null;
+  }
+
+  const id = segments[1];
+
+  if (!INSTAGRAM_ID.test(id)) {
+    return null;
+  }
+
+  return {
+    provider: 'instagram',
+    type: 'reel',
+    id,
+    start: null,
+    href: `https://www.instagram.com/reel/${encodeURIComponent(id)}/`,
+    embedUrl: null,
+    height: null
+  };
+}
+
 export function parseMediaUrl(value) {
-  return parseYouTubeUrl(value) || parseSpotifyUrl(value);
+  return (
+    parseYouTubeUrl(value) ||
+    parseSpotifyUrl(value) ||
+    parseInstagramUrl(value)
+  );
 }
 
 export function parseMediaTimeLabel(media) {
