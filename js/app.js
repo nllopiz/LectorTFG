@@ -91,11 +91,11 @@ const PROVIDERS = {
     allow: 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture'
   },
   instagram: {
-  name: 'Instagram',
-  externalLabel: 'Abrir en Instagram',
-  frameTitle: 'Reproductor de Instagram',
-  allow: ''
-}
+    name: 'Instagram',
+    externalLabel: 'Abrir en Instagram',
+    frameTitle: 'Reproductor de Instagram',
+    allow: ''
+  }
 };
 
 const TYPE_LABELS = {
@@ -1047,9 +1047,9 @@ function currentReadingPosition() {
 
   return anchor
     ? {
-        anchorId: anchor.id,
-        offset: anchor.getBoundingClientRect().top - paneTop
-      }
+      anchorId: anchor.id,
+      offset: anchor.getBoundingClientRect().top - paneTop
+    }
     : null;
 }
 
@@ -1305,8 +1305,8 @@ function updateMediaSize() {
   const analysisTriggerHeight = mediaAnalysisTrigger.hidden
     ? 0
     : mediaAnalysisTrigger.getBoundingClientRect().height +
-      Number.parseFloat(getComputedStyle(mediaAnalysisTrigger).marginTop) +
-      Number.parseFloat(getComputedStyle(mediaAnalysisTrigger).marginBottom);
+    Number.parseFloat(getComputedStyle(mediaAnalysisTrigger).marginTop) +
+    Number.parseFloat(getComputedStyle(mediaAnalysisTrigger).marginBottom);
   const availableForStage = Math.max(
     80,
     maxPanelHeight - barHeight - fallbackHeight - noteHeight - analysisTriggerHeight
@@ -1413,6 +1413,14 @@ function createInstagramEmbed(media) {
   blockquote.setAttribute('data-instgrm-permalink', media.href);
   blockquote.setAttribute('data-instgrm-version', '14');
 
+  const link = document.createElement('a');
+
+  link.href = media.href;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.textContent = 'Ver publicación en Instagram';
+
+  blockquote.append(link);
   mediaStage.classList.remove('is-ready');
   mediaStage.setAttribute('aria-busy', 'true');
 
@@ -1576,15 +1584,15 @@ function openMedia(media, trigger) {
   }
 
   const isAllowed =
-  media.provider === 'instagram'
-    ? isAllowedInstagramUrl(media.href)
-    : isAllowedEmbed(media.embedUrl, media.provider);
+    media.provider === 'instagram'
+      ? isAllowedInstagramUrl(media.href)
+      : isAllowedEmbed(media.embedUrl, media.provider);
 
-if (!isAllowed) {
-  console.error('Se rechazó una URL multimedia no permitida.', media);
-  announce('No se pudo abrir el reproductor.');
-  return;
-}
+  if (!isAllowed) {
+    console.error('Se rechazó una URL multimedia no permitida.', media);
+    announce('No se pudo abrir el reproductor.');
+    return;
+  }
 
   window.clearTimeout(closeCleanupTimer);
 
