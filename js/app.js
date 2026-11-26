@@ -1362,6 +1362,10 @@ function destroyIframe() {
     currentInstagramEmbed = null;
   }
 
+  mediaStage
+  .querySelectorAll('iframe.instagram-media-rendered')
+  .forEach((iframe) => iframe.remove());
+
   mediaStage.classList.remove('is-ready');
   mediaStage.setAttribute('aria-busy', 'false');
 }
@@ -1413,13 +1417,8 @@ function loadInstagramScript() {
 }
 
 function createInstagramEmbed(media) {
-  if (!isAllowedInstagramUrl(media.href)) {
-    console.error('Se rechazó una URL de Instagram no permitida.', media.href);
-    announce('No se pudo abrir el reproductor.');
-    return;
-  }
+  const token = instagramRenderToken;
 
-  const token = ++instagramRenderToken;
   const blockquote = document.createElement('blockquote');
 
   blockquote.className = 'instagram-media';
@@ -1434,11 +1433,29 @@ function createInstagramEmbed(media) {
   link.textContent = 'Ver publicación en Instagram';
 
   blockquote.append(link);
-  mediaStage.classList.remove('is-ready');
-  mediaStage.setAttribute('aria-busy', 'true');
 
   currentInstagramEmbed = blockquote;
   mediaStage.append(blockquote);
+
+  const markReady = () => {
+    if (
+      token !== instagramRenderToken ||
+      currentInstagramEmbed !== blockquote
+    ) {
+      return;
+    }
+
+    window.clearTimeout(loadTimer);
+    loadTimer = 0;
+
+    mediaStage.classList.add('is-ready');
+    mediaStage.setAttribute('aria-busy', 'false');
+
+    if (instagramObserver) {
+      instagramObserver.disconnect();
+      instagramObserver = null;
+    }
+  };
 
   loadInstagramScript()
     .then(() => {
@@ -1448,30 +1465,6 @@ function createInstagramEmbed(media) {
       ) {
         return;
       }
-
-      if (!window.instgrm?.Embeds?.process) {
-        throw new Error('Instagram Embed no está disponible.');
-      }
-
-      const markReady = () => {
-        if (
-          token !== instagramRenderToken ||
-          currentInstagramEmbed !== blockquote
-        ) {
-          return;
-        }
-
-        window.clearTimeout(loadTimer);
-        loadTimer = 0;
-
-        mediaStage.classList.add('is-ready');
-        mediaStage.setAttribute('aria-busy', 'false');
-
-        if (instagramObserver) {
-          instagramObserver.disconnect();
-          instagramObserver = null;
-        }
-      };
 
       instagramObserver = new MutationObserver(() => {
         const iframe = mediaStage.querySelector(
@@ -1488,17 +1481,6 @@ function createInstagramEmbed(media) {
         subtree: true
       });
 
-      window.instgrm.Embeds.process();
-
-      if (mediaStage.querySelector('iframe.instagram-media-rendered')) {
-        markReady();
-      }
-      window.instgrm.Embeds.process();
-
-      if (mediaStage.querySelector('iframe.instagram-media-rendered')) {
-        markReady();
-      }
-
       loadTimer = window.setTimeout(() => {
         if (
           token !== instagramRenderToken ||
@@ -1509,6 +1491,12 @@ function createInstagramEmbed(media) {
 
         mediaStage.setAttribute('aria-busy', 'false');
       }, 12000);
+
+      window.instgrm.Embeds.process();
+
+      if (mediaStage.querySelector('iframe.instagram-media-rendered')) {
+        markReady();
+      }
     })
     .catch((error) => {
       if (token !== instagramRenderToken) {
@@ -1516,9 +1504,8 @@ function createInstagramEmbed(media) {
       }
 
       console.error('Error al cargar el Reel de Instagram:', error);
-
       mediaStage.setAttribute('aria-busy', 'false');
-      announce('No se pudo cargar el contenido de Instagram.');
+      announce('No se pudo cargar el Reel de Instagram.');
     });
 }
 
